@@ -30,16 +30,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package com.jme3.input;
-
-
-import com.jme3.input.*;
-import com.jme3.input.controls.*;
 import com.jme3.input.dummy.*;
 import com.jme3.input.event.*;
 
-
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -47,21 +43,74 @@ import static org.junit.Assert.*;
  * 
  * @author 
  */
-public class InputManagerTest {
+
+public class MouseInputTest{
     
-	public MouseInput mi;
+	public TestMouseInput mi;
 	public KeyInput ki;
+	public TouchInput ti;
+	public JoyInput ji;
 	public InputManager im;
+	
 	
     @Before
     public void setUp() {
-    	mi =  new DummyMouseInput();
-    	ki = new DummyKeyInput();    	
-    	im = new InputManager(mi,ki,null,null);
+    	ki = new DummyKeyInput();
+        ki.initialize();
+        
+    	mi = new TestMouseInput();    	
+        mi.initialize();
+    	//mi.setCursorVisible(true);
+    	im = new InputManager(mi, ki, null, null);
     }
     
     @Test
-    public void testCreateEmptyInputManager() {
-        assertEquals(true, true);
+    public void testIsSimulateMouse() {
+        assertEquals(false, im.isSimulateMouse());   
+        /*ti = (TouchInput) new DummyInput();
+
+    	im = new InputManager(mi,ki,null,ti);
+        
+        assertEquals(true, im.isSimulateMouse()); 
+        */
+    }
+    
+
+    @Test(expected=UnsupportedOperationException.class)
+    public void testOnMouseButtonEventNotEventsPermitted() {
+    	MouseButtonEvent evt = new MouseButtonEvent(0, true, 5, 10);
+        im.onMouseButtonEvent(evt);
+    }
+    
+    @Test
+    public void testOnLeftMouseButtonEvent() {
+    	mi.addEvent(new MouseButtonEvent(0, true, 5, 10));
+    	
+    	im.update(1);
+    	
+        assertEquals(5, im.getCursorPosition().getX(),0.001);
+        assertEquals(10, im.getCursorPosition().getY(),0.001);
+    }
+    
+    @Test
+    public void testOnRightMouseButtonEvent() {
+    	
+    	mi.addEvent(new MouseButtonEvent(1, true, 10, 5));
+    	
+    	im.update(1);
+    	
+        assertEquals(10, im.getCursorPosition().getX(),0.001);
+        assertEquals(5, im.getCursorPosition().getY(),0.001);
     }
 }
+
+
+/*
+im.getSimulateMouse();
+im.onMouseButtonEvent(evt);
+im.onMouseMotionEvent(evt);
+im.setSimulateMouse(value);
+im.setMouseCursor(jmeCursor);
+im.getCursorPosition();
+im.setCursorVisible(visible);
+*/
