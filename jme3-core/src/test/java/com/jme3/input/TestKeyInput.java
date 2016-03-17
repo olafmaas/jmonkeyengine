@@ -33,21 +33,18 @@ package com.jme3.input;
 
 import java.util.ArrayList;
 
-import com.jme3.cursors.plugins.JmeCursor;
-import com.jme3.input.event.MouseButtonEvent;
-import com.jme3.input.event.MouseMotionEvent;
+import com.jme3.input.event.KeyInputEvent;
 
 /**
- * TestMouseInput as an implementation of <code>MouseInput</code> to simulate mouse for tests.
+ * TestKeyInput as an implementation of <code>KeyInput</code> to simulate keys for tests.
  *
  * @author Willem Vaandrager.
  */
-public class TestMouseInput implements MouseInput {
+public class TestKeyInput implements KeyInput {
 
     protected boolean inited = false;
     
-	private ArrayList<MouseButtonEvent> eventQueue = new ArrayList<MouseButtonEvent>();
-	private ArrayList<MouseMotionEvent> motionQueue = new ArrayList<MouseMotionEvent>();
+	private ArrayList<KeyInputEvent> eventQueue = new ArrayList<KeyInputEvent>();
 	
     private RawInputListener listener;
     
@@ -59,21 +56,8 @@ public class TestMouseInput implements MouseInput {
         inited = true;
     }
     
-    public void setCursorVisible(boolean visible) {
-        if (!inited)
-            throw new IllegalStateException("Input not initialized.");
-    }
-
-    public int getButtonCount() {
-        return 3;
-    }
-    
-    public void addEvent(MouseButtonEvent evt){
+    public void addEvent(KeyInputEvent evt){
     	eventQueue.add(evt);
-    }
-    
-    public void addEvent(MouseMotionEvent evt){
-    	motionQueue.add(evt);
     }
     
     public void setInputListener(RawInputListener listener) {
@@ -88,15 +72,9 @@ public class TestMouseInput implements MouseInput {
         if (!inited)
             throw new IllegalStateException("Input not initialized.");
         
-        for (MouseButtonEvent evt : eventQueue) {
-            listener.onMouseButtonEvent(evt);
+        for (KeyInputEvent evt : eventQueue) {
+            listener.onKeyEvent(evt);
 		}
-        for (MouseMotionEvent evt : motionQueue) {
-            listener.onMouseMotionEvent(evt);
-		}
-    }
-    
-    public void setNativeCursor(JmeCursor cursor) {
     }
 
     public void destroy() {

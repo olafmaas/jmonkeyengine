@@ -30,14 +30,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package com.jme3.input;
-import com.jme3.cursors.plugins.JmeCursor;
+
+import com.jme3.input.controls.*;
 import com.jme3.input.dummy.*;
 import com.jme3.input.event.*;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * Tests functionality of input behavior of the mouse and events 
@@ -45,77 +44,71 @@ import static org.junit.Assert.*;
  * @author Willem Vaandrager
  */
 
-public class MouseInputTest{
+public class KeysInputTest{
     
-	public TestMouseInput mi;
-	public KeyInput ki;
-	public TouchInput ti;
-	public JoyInput ji;
+	public MouseInput mi;
+	public TestKeyInput ki;
 	public InputManager im;
 	
     @Before
     public void setUp() {
-    	ki = new DummyKeyInput();
-        ki.initialize();
-        
-    	mi = new TestMouseInput();    	
+    	mi = new DummyMouseInput();
         mi.initialize();
         
+    	ki = new TestKeyInput();    	
+        ki.initialize();
+        
     	im = new InputManager(mi, ki, null, null);
+    	
+        //test binding
+        im.addMapping("1", new KeyTrigger(1));
     }    
 
     @Test(expected=UnsupportedOperationException.class)
-    public void testOnMouseButtonEventNotEventsPermitted() {
-        im.onMouseButtonEvent(new MouseButtonEvent(0, true, 5, 10));
+    public void testKeyInputEventNotEventsPermitted() {
+        im.onKeyEvent(new KeyInputEvent(1, '1', true, false));
     }
     
-    @Test(expected=UnsupportedOperationException.class)
-    public void testOnMouseMotionEventNotEventsPermitted() {
-        im.onMouseMotionEvent(new MouseMotionEvent(0, 0, 0, 0, 0, 0));
-    }    
-    
     @Test
-    public void testOnLeftMouseButtonEvent() {
-    	mi.addEvent(new MouseButtonEvent(0, true, 5, 10));
+    public void testOnKeyInputEventNoBinding() {
+    	ki.addEvent(new KeyInputEvent(2, '2', true, false));
     	
     	im.update(1);
-    	
-        assertEquals(5, im.getCursorPosition().getX(),0.001);
-        assertEquals(10, im.getCursorPosition().getY(),0.001);
     }
     
     @Test
-    public void testOnRightMouseButtonEvent() {
-    	
-    	mi.addEvent(new MouseButtonEvent(1, true, 10, 5));
+    public void testOnKeyInputEventBinding() {
+    	ki.addEvent(new KeyInputEvent(1, '1', true, false));
     	
     	im.update(1);
-    	
-        assertEquals(10, im.getCursorPosition().getX(),0.001);
-        assertEquals(5, im.getCursorPosition().getY(),0.001);
     }
     
     @Test
-    public void testMouseMotion() {
-        assertEquals(0, im.getCursorPosition().getX(),0.001);
-        assertEquals(0, im.getCursorPosition().getY(),0.001);
-    	
-    	mi.addEvent(new MouseMotionEvent(5,10,10,10,2,2));
+    public void testOnKeyInputEventNotPressed() {
+    	ki.addEvent(new KeyInputEvent(1, '1', false, false));
     	
     	im.update(1);
-    	
-        assertEquals(5, im.getCursorPosition().getX(),0.001);
-        assertEquals(10, im.getCursorPosition().getY(),0.001);
     }
     
     @Test
-    public void testCursor(){    	
-    	assertEquals(true,im.isCursorVisible());
+    public void testOnKeyInputEventPressRelease() {
+    	ki.addEvent(new KeyInputEvent(1, '1', true, false));
+    	im.update(1);    	
     	
-    	im.setMouseCursor(new JmeCursor());
-    	assertEquals(true,im.isCursorVisible());
+    	ki.addEvent(new KeyInputEvent(1, '1', false, false));
+    	im.update(1);
     	
-    	im.setCursorVisible(false);    	
-    	assertEquals(false,im.isCursorVisible());
+    	ki.addEvent(new KeyInputEvent(1, '1', true, false));
+    	im.update(1);  
+    	
+    	ki.addEvent(new KeyInputEvent(1, '1', false, false));
+    	im.update(1);
+    }
+    
+    @Test
+    public void testOnKeyInputEventRepeating() {
+    	ki.addEvent(new KeyInputEvent(1, '1', true, true));
+    	
+    	im.update(1);
     }
 }
