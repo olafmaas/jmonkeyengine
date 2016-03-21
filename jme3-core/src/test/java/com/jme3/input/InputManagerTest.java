@@ -33,6 +33,8 @@ package com.jme3.input;
 
 
 import com.jme3.input.dummy.*;
+import com.jme3.input.event.InputEvent;
+import com.jme3.input.event.JoyButtonEvent;
 
 import org.junit.Before;
 import org.junit.Test;

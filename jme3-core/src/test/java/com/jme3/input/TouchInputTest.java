@@ -37,6 +37,9 @@ import com.jme3.input.controls.TouchTrigger;
 import com.jme3.input.dummy.*;
 import com.jme3.input.event.*;
 import com.jme3.input.event.TouchEvent.Type;
+import com.jme3.input.test.util.ActionListenerTester;
+import com.jme3.input.test.util.AnalogListenerTester;
+import com.jme3.input.test.util.TouchListenerTester;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -93,9 +96,20 @@ public class TouchInputTest{
     	te.setKeyCode(3);
     	
     	ti.addEvent(te);
-    	assertEquals(false,ti.eventQueue.get(0).isConsumed());
+    	
+    	ActionListenerTester acl = new ActionListenerTester();
+    	TouchListenerTester tcl = new TouchListenerTester();
+    	
+        im.addListener(acl, "3");
+        im.addListener(tcl, "3");
+        
     	im.update(1);
-    	assertEquals(true,ti.eventQueue.get(0).isConsumed());
+    	
+    	assertEquals(false, acl.onActionCalled);
+    	assertEquals(0, acl.nrsCalled);
+    	assertEquals(1, tcl.nrsCalled);
+
+    	assertEquals(true, tcl.onTouchCalled);
     	
     	assertEquals(5, im.getCursorPosition().getX(),0.001);
         assertEquals(10, im.getCursorPosition().getY(),0.001);

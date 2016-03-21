@@ -33,8 +33,13 @@ package com.jme3.input;
 
 import static org.junit.Assert.*;
 
+import com.jme3.input.controls.JoyAxisTrigger;
+import com.jme3.input.controls.JoyButtonTrigger;
+import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.dummy.*;
 import com.jme3.input.event.*;
+import com.jme3.input.test.util.ActionListenerTester;
+import com.jme3.input.test.util.AnalogListenerTester;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -72,7 +77,7 @@ public class JoyInputTest{
     	//Test joystick
     	joystick = new TestJoystick(im, ji, 0, "test");
     	button = new DefaultJoystickButton(im, joystick, 0, "button0", "0");
-    	axis = new DefaultJoystickAxis(im, joystick, 0, "axis x", "x", false, false, 0);
+    	axis = new DefaultJoystickAxis(im, joystick, 0, "x", "x", false, false, 0);
     	ji.setJoystick(joystick);
     }    
 
@@ -86,12 +91,102 @@ public class JoyInputTest{
         im.onJoyAxisEvent(new JoyAxisEvent(axis, 5));
     }
     
+    @Test(expected=NullPointerException.class)
+    public void testOnJoyButtonEventNoButton() {
+    	ji.addEvent(new JoyButtonEvent(null,true));
+    	assertEquals(false,ji.buttonQueue.get(0).isConsumed());
+    	im.update(1);
+    }
+    
     @Test
-    public void testOnJoyButtonEvent() {
+    public void testOnJoyButtonEventPressed() {
+    	ji.addEvent(new JoyButtonEvent(button,true));
+    	
+    	//test binding
+        im.addMapping("button0", new JoyButtonTrigger(0, 0));
+    	
+    	ActionListenerTester acl = new ActionListenerTester();
+    	AnalogListenerTester anl = new AnalogListenerTester();
+    	
+        im.addListener(acl, "button0");
+        im.addListener(anl, "button0");
+        
+    	im.update(1);
+    	
+    	assertEquals(true, acl.onActionCalled);
+    	assertEquals(1, acl.nrsCalled);
+
+    	assertEquals(false, anl.onAnalogCalled);
+    }
+    
+    @Test
+    public void testOnJoyButtonEventNotPressed() {
+    	ji.addEvent(new JoyButtonEvent(button,false));
+    	assertEquals(false,ji.buttonQueue.get(0).isConsumed());
+    	im.update(1);
+    	assertEquals(true,ji.buttonQueue.get(0).isConsumed());
+    }
+    
+    @Test
+    public void testOnJoyButtonEventPressReleaseBindingTiming() {
+    	//test binding
+        im.addMapping("button0", new JoyButtonTrigger(0, 0));
+    	
     	ji.addEvent(new JoyButtonEvent(button,true));
     	assertEquals(false,ji.buttonQueue.get(0).isConsumed());
     	im.update(1);
     	assertEquals(true,ji.buttonQueue.get(0).isConsumed());
+    	
+    	JoyButtonEvent je = new JoyButtonEvent(button, false);
+    	je.setTime(1);
+    	
+    	ji.addEvent(je);
+    	assertEquals(false,ji.buttonQueue.get(1).isConsumed());
+    	im.update(1);
+    	assertEquals(true,ji.buttonQueue.get(1).isConsumed());
+    }
+    
+    @Test
+    public void testOnJoyButtonEventPressTwiceBindingTiming() {
+    	
+    	TestKeyInput key = new TestKeyInput();    	
+    	key.initialize();
+    	
+    	im = new InputManager(mi, key, ji, null);
+    	
+    	//test binding
+        im.addMapping("button0", new JoyButtonTrigger(0, 0));
+    	
+    	ActionListenerTester acl = new ActionListenerTester();
+    	AnalogListenerTester anl = new AnalogListenerTester();
+    	
+        im.addListener(acl, "button0");
+        im.addListener(anl, "button0");
+        
+        ji.addEvent(new JoyButtonEvent(button,true));
+        
+    	im.update(1);
+    	
+    	assertEquals(true, acl.onActionCalled);
+    	assertEquals(1, acl.nrsCalled);
+
+    	assertEquals(false, anl.onAnalogCalled);
+    	
+    	ji.addEvent(new JoyButtonEvent(button,true));
+    	
+    	im.update(1);   
+    	
+    	assertEquals(true, acl.onActionCalled);
+    	assertEquals(2, acl.nrsCalled);
+    	assertEquals(1, anl.nrsCalled);
+    	assertEquals(true, anl.onAnalogCalled);
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void testOnJoyAxisEventNoAxis() {
+    	ji.addEvent(new JoyAxisEvent(null, 0));
+    	assertEquals(false,ji.axisQueue.get(0).isConsumed());
+    	im.update(1);
     }
     
     @Test
@@ -100,6 +195,29 @@ public class JoyInputTest{
     	assertEquals(false,ji.axisQueue.get(0).isConsumed());
     	im.update(1);
     	assertEquals(true,ji.axisQueue.get(0).isConsumed());
+    }
+    
+    @Test
+    public void testOnJoyAxisEventMultiple() {
+    	ji.addEvent(new JoyAxisEvent(axis, 0.1F));
+    	assertEquals(false,ji.axisQueue.get(0).isConsumed());
+    	im.update(1);
+    	assertEquals(true,ji.axisQueue.get(0).isConsumed());    	
+
+    	axis = new DefaultJoystickAxis(im, joystick, 1, "y", "y", true, true, 0);
+    	
+    	ji.addEvent(new JoyAxisEvent(axis,-0.1F));
+    	assertEquals(false,ji.axisQueue.get(1).isConsumed());
+    	im.update(1);
+    	assertEquals(true,ji.axisQueue.get(1).isConsumed());
+    	ji.addEvent(new JoyAxisEvent(axis, 0.04F));
+    	assertEquals(false,ji.axisQueue.get(2).isConsumed());
+    	im.update(1);
+    	assertEquals(true,ji.axisQueue.get(2).isConsumed());
+    	ji.addEvent(new JoyAxisEvent(axis, 0.03F));
+    	assertEquals(false,ji.axisQueue.get(3).isConsumed());
+    	im.update(1);
+    	assertEquals(true,ji.axisQueue.get(3).isConsumed());
     }
     
     @Test
@@ -117,6 +235,51 @@ public class JoyInputTest{
     	im.update(1);
     	assertEquals(true,ji.axisQueue.get(0).isConsumed());
     }
+    
+    @Test
+    public void testOnJoyAxisEventInDeadzoneBinding() {    	
+    	//test binding
+        im.addMapping("x", new JoyAxisTrigger(0, 0, false));
+    	
+    	ji.addEvent(new JoyAxisEvent(axis, 0.03F));
+    	assertEquals(false,ji.axisQueue.get(0).isConsumed());
+    	im.update(1);
+    	assertEquals(true,ji.axisQueue.get(0).isConsumed());
+    }
+    
+    @Test
+    public void testOnJoyAxisEventOutsideDeadzoneBinding() {
+    	//test binding
+        im.addMapping("x", new JoyAxisTrigger(0, 0, false));
+
+    	ji.addEvent(new JoyAxisEvent(axis, 0.1F));
+    	
+    	ActionListenerTester acl = new ActionListenerTester();
+    	AnalogListenerTester anl = new AnalogListenerTester();
+    	
+        im.addListener(acl, "x");
+        im.addListener(anl, "x");
+        
+    	im.update(1);
+    	
+    	assertEquals(true, acl.onActionCalled);
+    	assertEquals(1, acl.nrsCalled);
+    	assertEquals(2, anl.nrsCalled);
+
+    	assertEquals(true, anl.onAnalogCalled);
+    }
+    
+    @Test
+    public void testOnJoyAxisEventOutsideDeadzoneNegativeBinding() {
+    	//test binding
+        im.addMapping("x", new JoyAxisTrigger(0, 0, false));
+    	
+    	ji.addEvent(new JoyAxisEvent(axis, -0.1F));
+    	assertEquals(false,ji.axisQueue.get(0).isConsumed());
+    	im.update(1);
+    	assertEquals(true,ji.axisQueue.get(0).isConsumed());
+    }
+    
     
     @Test
     public void testSetAxisDeadzone(){
