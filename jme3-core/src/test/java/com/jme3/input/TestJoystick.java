@@ -33,21 +33,24 @@ package com.jme3.input;
 
 import java.util.ArrayList;
 
-import com.jme3.input.event.KeyInputEvent;
+import com.jme3.input.event.JoyAxisEvent;
+import com.jme3.input.event.JoyButtonEvent;
 
 /**
- * TestKeyInput as an implementation of <code>KeyInput</code> to simulate keys for tests.
+ * TestJoyInput as an implementation of <code>JoyInput</code> to simulate joystick for tests.
  *
  * @author Willem Vaandrager.
  */
-public class TestKeyInput implements KeyInput {
+public class TestJoystick implements JoyInput {
 
     protected boolean inited = false;
     
-	public ArrayList<KeyInputEvent> eventQueue = new ArrayList<KeyInputEvent>();
+    private Joystick joystick;
+    
+    public ArrayList<JoyButtonEvent> buttonQueue = new ArrayList<JoyButtonEvent>();
+    public ArrayList<JoyAxisEvent> axisQueue = new ArrayList<JoyAxisEvent>();
 	
     private RawInputListener listener;
-    
 
     public void initialize() {
         if (inited)
@@ -56,8 +59,12 @@ public class TestKeyInput implements KeyInput {
         inited = true;
     }
     
-    public void addEvent(KeyInputEvent evt){
-    	eventQueue.add(evt);
+    public void addEvent(JoyButtonEvent evt){
+    	buttonQueue.add(evt);
+    }
+    
+    public void addEvent(JoyAxisEvent evt){
+    	axisQueue.add(evt);
     }
     
     public void setInputListener(RawInputListener listener) {
@@ -72,8 +79,11 @@ public class TestKeyInput implements KeyInput {
         if (!inited)
             throw new IllegalStateException("Input not initialized.");
         
-        for (KeyInputEvent evt : eventQueue) {
-            listener.onKeyEvent(evt);
+        for (JoyButtonEvent evt : buttonQueue) {
+            listener.onJoyButtonEvent(evt);
+		}
+        for (JoyAxisEvent evt : axisQueue) {
+            listener.onJoyAxisEvent(evt);
 		}
     }
 
@@ -91,5 +101,18 @@ public class TestKeyInput implements KeyInput {
     public long getInputTimeNanos() {
         return System.currentTimeMillis() * 1000000;
     }
+
+	@Override
+	public void setJoyRumble(int joyId, float amount) {
+		// TODO Auto-generated method stub		
+	}
+
+	@Override
+	public Joystick[] loadJoysticks(InputManager inputManager) {
+		if(joystick == null){
+			joystick = new AbstractJoystick(inputManager, this, 0, "test");
+		}
+		return new Joystick[]{joystick};
+	}
 }
 

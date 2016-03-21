@@ -46,83 +46,76 @@ import org.junit.Test;
  * @author Willem Vaandrager
  */
 
-public class KeysInputTest{
+public class JoyInputTest{
     
 	public MouseInput mi;
-	public TestKeyInput ki;
+	public KeyInput ki;
+	public TestJoyInput ji;
 	public InputManager im;
+	
+	public JoystickButton button;
+	public JoystickAxis axis;
 	
     @Before
     public void setUp() {
     	mi = new DummyMouseInput();
         mi.initialize();
         
-    	ki = new TestKeyInput();    	
+    	ki = new DummyKeyInput();    	
         ki.initialize();
         
-    	im = new InputManager(mi, ki, null, null);
+        ji = new TestJoyInput();
+        ji.initialize();
+        
+    	im = new InputManager(mi, ki, ji, null);
     	
-        //test binding
-        im.addMapping("1", new KeyTrigger(1));
+    	//Test button 0
+    	button = new DefaultJoystickButton(im, null, 0, "button0", "0");
+    	
+    	//Test axis
+    	axis = new DefaultJoystickAxis(im, null, 0, "axis x", "x", false, false, 0);
     }    
 
     @Test(expected=UnsupportedOperationException.class)
-    public void testKeyInputEventNotEventsPermitted() {
-        im.onKeyEvent(new KeyInputEvent(1, '1', true, false));
+    public void testJoyButtonEventNotEventsPermitted() {
+        im.onJoyButtonEvent(new JoyButtonEvent(button,true));
+    }
+    
+    @Test(expected=UnsupportedOperationException.class)
+    public void testJoyAxisEventNotEventsPermitted() {
+        im.onJoyAxisEvent(new JoyAxisEvent(axis, 5));
     }
     
     @Test
-    public void testOnKeyInputEventNoBinding() {
-    	ki.addEvent(new KeyInputEvent(2, '2', true, false));
-    	assertEquals(false,ki.eventQueue.get(0).isConsumed());
+    public void testOnJoyButtonEvent() {
+    	ji.addEvent(new JoyButtonEvent(button,true));
+    	assertEquals(false,ji.buttonQueue.get(0).isConsumed());
     	im.update(1);
-    	assertEquals(true,ki.eventQueue.get(0).isConsumed());
+    	assertEquals(true,ji.buttonQueue.get(0).isConsumed());
     }
     
     @Test
-    public void testOnKeyInputEventBinding() {
-    	ki.addEvent(new KeyInputEvent(1, '1', true, false));
-    	assertEquals(false,ki.eventQueue.get(0).isConsumed());
+    public void testOnJoyAxisEventInDeadzone() {
+    	ji.addEvent(new JoyAxisEvent(axis, 0.03F));
+    	assertEquals(false,ji.axisQueue.get(0).isConsumed());
     	im.update(1);
-    	assertEquals(true,ki.eventQueue.get(0).isConsumed());
+    	assertEquals(true,ji.axisQueue.get(0).isConsumed());
     }
     
     @Test
-    public void testOnKeyInputEventNotPressed() {
-    	ki.addEvent(new KeyInputEvent(1, '1', false, false));
-    	assertEquals(false,ki.eventQueue.get(0).isConsumed());
+    public void testOnJoyAxisEventOutsideDeadzone() {
+    	ji.addEvent(new JoyAxisEvent(axis, 0.1F));
+    	assertEquals(false,ji.axisQueue.get(0).isConsumed());
     	im.update(1);
-    	assertEquals(true,ki.eventQueue.get(0).isConsumed());
+    	assertEquals(true,ji.axisQueue.get(0).isConsumed());
     }
     
     @Test
-    public void testOnKeyInputEventPressRelease() {    	
-    	ki.addEvent(new KeyInputEvent(1, '1', true, false));
-    	assertEquals(false,ki.eventQueue.get(0).isConsumed());
+    public void testOnJoyAxisEventOutsideDeadzoneNegative() {
+    	ji.addEvent(new JoyAxisEvent(axis, -0.1F));
+    	assertEquals(false,ji.axisQueue.get(0).isConsumed());
     	im.update(1);
-    	assertEquals(true,ki.eventQueue.get(0).isConsumed());
-    	
-    	ki.addEvent(new KeyInputEvent(1, '1', false, false));
-    	assertEquals(false,ki.eventQueue.get(1).isConsumed());
-    	im.update(1);
-    	assertEquals(true,ki.eventQueue.get(1).isConsumed());
-    	
-    	ki.addEvent(new KeyInputEvent(1, '1', true, false));
-    	assertEquals(false,ki.eventQueue.get(2).isConsumed());
-    	im.update(1);
-    	assertEquals(true,ki.eventQueue.get(2).isConsumed());  
-    	
-    	ki.addEvent(new KeyInputEvent(1, '1', false, false));
-    	assertEquals(false,ki.eventQueue.get(3).isConsumed());
-    	im.update(1);
-    	assertEquals(true,ki.eventQueue.get(3).isConsumed());
+    	assertEquals(true,ji.axisQueue.get(0).isConsumed());
     }
     
-    @Test
-    public void testOnKeyInputEventRepeating() {
-    	ki.addEvent(new KeyInputEvent(1, '1', true, true));
-    	assertEquals(false,ki.eventQueue.get(0).isConsumed());
-    	im.update(1);
-    	assertEquals(true,ki.eventQueue.get(0).isConsumed());
-    }
 }

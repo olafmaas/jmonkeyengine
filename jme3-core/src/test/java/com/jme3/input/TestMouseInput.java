@@ -46,11 +46,10 @@ public class TestMouseInput implements MouseInput {
 
     protected boolean inited = false;
     
-	private ArrayList<MouseButtonEvent> eventQueue = new ArrayList<MouseButtonEvent>();
-	private ArrayList<MouseMotionEvent> motionQueue = new ArrayList<MouseMotionEvent>();
+    public ArrayList<MouseButtonEvent> eventQueue = new ArrayList<MouseButtonEvent>();
+    public ArrayList<MouseMotionEvent> motionQueue = new ArrayList<MouseMotionEvent>();
 	
     private RawInputListener listener;
-    
 
     public void initialize() {
         if (inited)

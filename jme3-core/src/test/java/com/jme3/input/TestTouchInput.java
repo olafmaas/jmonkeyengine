@@ -33,21 +33,23 @@ package com.jme3.input;
 
 import java.util.ArrayList;
 
-import com.jme3.input.event.KeyInputEvent;
+import com.jme3.input.event.TouchEvent;
 
 /**
- * TestKeyInput as an implementation of <code>KeyInput</code> to simulate keys for tests.
+ * TestTouchInput as an implementation of <code>TouchInput</code> to simulate events of touch device for tests.
  *
  * @author Willem Vaandrager.
  */
-public class TestKeyInput implements KeyInput {
+public class TestTouchInput implements TouchInput {
 
     protected boolean inited = false;
     
-	public ArrayList<KeyInputEvent> eventQueue = new ArrayList<KeyInputEvent>();
+    public ArrayList<TouchEvent> eventQueue = new ArrayList<TouchEvent>();
 	
     private RawInputListener listener;
     
+    private boolean isSimulateMouse = false;
+    private boolean isSimulateKeyboard = false;
 
     public void initialize() {
         if (inited)
@@ -56,7 +58,7 @@ public class TestKeyInput implements KeyInput {
         inited = true;
     }
     
-    public void addEvent(KeyInputEvent evt){
+    public void addEvent(TouchEvent evt){
     	eventQueue.add(evt);
     }
     
@@ -72,8 +74,8 @@ public class TestKeyInput implements KeyInput {
         if (!inited)
             throw new IllegalStateException("Input not initialized.");
         
-        for (KeyInputEvent evt : eventQueue) {
-            listener.onKeyEvent(evt);
+        for (TouchEvent evt : eventQueue) {
+            listener.onTouchEvent(evt);
 		}
     }
 
@@ -91,5 +93,32 @@ public class TestKeyInput implements KeyInput {
     public long getInputTimeNanos() {
         return System.currentTimeMillis() * 1000000;
     }
+
+	@Override
+	public void setSimulateMouse(boolean simulate) {
+		isSimulateMouse = simulate;
+	}
+
+	@Override
+	public boolean isSimulateMouse() {
+		return isSimulateMouse;
+	}
+
+	@Override
+	public void setSimulateKeyboard(boolean simulate) {
+		isSimulateKeyboard = simulate;
+		
+	}
+
+	@Override
+	public boolean isSimulateKeyboard() {
+		return isSimulateKeyboard;
+	}
+
+	@Override
+	public void setOmitHistoricEvents(boolean dontSendHistory) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 

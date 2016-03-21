@@ -32,14 +32,11 @@
 package com.jme3.input;
 
 
-import com.jme3.input.*;
-import com.jme3.input.controls.*;
 import com.jme3.input.dummy.*;
-import com.jme3.input.event.*;
-
 
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -57,11 +54,12 @@ public class InputManagerTest {
     public void setUp() {
     	mi =  new DummyMouseInput();
     	ki = new DummyKeyInput();    	
+
     	im = new InputManager(mi,ki,null,null);
     }
     
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testCreateEmptyInputManager() {
-        assertEquals(true, true);
+    	im = new InputManager(null,null,null,null);
     }
 }
