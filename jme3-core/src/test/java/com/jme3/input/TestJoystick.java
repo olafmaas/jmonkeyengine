@@ -110,7 +110,7 @@ public class TestJoystick implements JoyInput {
 	@Override
 	public Joystick[] loadJoysticks(InputManager inputManager) {
 		if(joystick == null){
-			joystick = new AbstractJoystick(inputManager, this, 0, "test");
+			//joystick = new AbstractJoystick(inputManager, this, 0, "test");
 		}
 		return new Joystick[]{joystick};
 	}

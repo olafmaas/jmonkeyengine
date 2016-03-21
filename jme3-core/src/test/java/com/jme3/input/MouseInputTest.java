@@ -31,8 +31,11 @@
  */
 package com.jme3.input;
 import com.jme3.cursors.plugins.JmeCursor;
+import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.input.dummy.*;
 import com.jme3.input.event.*;
+import com.jme3.input.test.util.ActionListenerTester;
+import com.jme3.input.test.util.AnalogListenerTester;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -61,7 +64,10 @@ public class MouseInputTest{
     	mi = new TestMouseInput();    	
         mi.initialize();
         
+        
     	im = new InputManager(mi, ki, null, null);
+    	im.addMapping("MouseL", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+    	
     }    
 
     @Test(expected=UnsupportedOperationException.class)
@@ -78,7 +84,18 @@ public class MouseInputTest{
     public void testOnLeftMouseButtonEvent() {
     	mi.addEvent(new MouseButtonEvent(0, true, 5, 10));
     	
+    	ActionListenerTester acl = new ActionListenerTester();
+    	AnalogListenerTester anl = new AnalogListenerTester();
+    	
+        im.addListener(acl, "MouseL");
+        im.addListener(anl, "MouseL");
+        
     	im.update(1);
+    	
+    	assertEquals(true, acl.onActionCalled);
+    	assertEquals(1, acl.nrsCalled);
+
+    	assertEquals(false, anl.onAnalogCalled);
     	
         assertEquals(5, im.getCursorPosition().getX(),0.001);
         assertEquals(10, im.getCursorPosition().getY(),0.001);
@@ -99,7 +116,7 @@ public class MouseInputTest{
     public void testMouseMotion() {
         assertEquals(0, im.getCursorPosition().getX(),0.001);
         assertEquals(0, im.getCursorPosition().getY(),0.001);
-    	
+        
     	mi.addEvent(new MouseMotionEvent(5,10,10,10,2,2));
     	
     	im.update(1);
