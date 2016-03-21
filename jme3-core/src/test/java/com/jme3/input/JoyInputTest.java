@@ -33,7 +33,6 @@ package com.jme3.input;
 
 import static org.junit.Assert.*;
 
-import com.jme3.input.controls.*;
 import com.jme3.input.dummy.*;
 import com.jme3.input.event.*;
 
@@ -53,6 +52,7 @@ public class JoyInputTest{
 	public TestJoyInput ji;
 	public InputManager im;
 	
+	public Joystick joystick;
 	public JoystickButton button;
 	public JoystickAxis axis;
 	
@@ -69,11 +69,11 @@ public class JoyInputTest{
         
     	im = new InputManager(mi, ki, ji, null);
     	
-    	//Test button 0
-    	button = new DefaultJoystickButton(im, null, 0, "button0", "0");
-    	
-    	//Test axis
-    	axis = new DefaultJoystickAxis(im, null, 0, "axis x", "x", false, false, 0);
+    	//Test joystick
+    	joystick = new TestJoystick(im, ji, 0, "test");
+    	button = new DefaultJoystickButton(im, joystick, 0, "button0", "0");
+    	axis = new DefaultJoystickAxis(im, joystick, 0, "axis x", "x", false, false, 0);
+    	ji.setJoystick(joystick);
     }    
 
     @Test(expected=UnsupportedOperationException.class)
@@ -118,4 +118,22 @@ public class JoyInputTest{
     	assertEquals(true,ji.axisQueue.get(0).isConsumed());
     }
     
+    @Test
+    public void testSetAxisDeadzone(){
+    	assertEquals(0.05f, im.getAxisDeadZone(),0.001);
+    	im.setAxisDeadZone(0.1f);
+    	assertEquals(0.1f, im.getAxisDeadZone(),0.001);
+    }
+    
+    @Test
+    public void testgetAxisDeadzone(){
+    	assertEquals(0.05f, im.getAxisDeadZone(),0.001);
+    }
+    
+    @Test 
+    public void testGetJoysticks(){
+        assertEquals(joystick.getName(),im.getJoysticks()[0].getName());
+        assertEquals(joystick.getJoyId(),im.getJoysticks()[0].getJoyId());
+        assertEquals(joystick.toString(),im.getJoysticks()[0].toString());
+    }
 }

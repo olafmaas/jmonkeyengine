@@ -32,87 +32,237 @@
 package com.jme3.input;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import com.jme3.input.event.JoyAxisEvent;
-import com.jme3.input.event.JoyButtonEvent;
+import com.jme3.input.controls.JoyAxisTrigger;
+import com.jme3.input.controls.JoyButtonTrigger;
 
 /**
- * TestJoyInput as an implementation of <code>JoyInput</code> to simulate joystick for tests.
+ * TestJoystick as an implementation of <code>Joystick</code> to simulate joystick for tests.
  *
  * @author Willem Vaandrager.
  */
-public class TestJoystick implements JoyInput {
 
-    protected boolean inited = false;
-    
-    private Joystick joystick;
-    
-    public ArrayList<JoyButtonEvent> buttonQueue = new ArrayList<JoyButtonEvent>();
-    public ArrayList<JoyAxisEvent> axisQueue = new ArrayList<JoyAxisEvent>();
-	
-    private RawInputListener listener;
+public class TestJoystick implements Joystick  {
 
-    public void initialize() {
-        if (inited)
-            throw new IllegalStateException("Input already initialized.");
+    private InputManager inputManager;
+    private JoyInput joyInput;
+    private int joyId;
+    private String name;
+    
+    private List<JoystickAxis> axes = new ArrayList<JoystickAxis>();       
+    private List<JoystickButton> buttons = new ArrayList<JoystickButton>();       
 
-        inited = true;
-    }
-    
-    public void addEvent(JoyButtonEvent evt){
-    	buttonQueue.add(evt);
-    }
-    
-    public void addEvent(JoyAxisEvent evt){
-    	axisQueue.add(evt);
+    /**
+     * Creates a new joystick instance. Only used internally.
+     */
+    public TestJoystick(InputManager inputManager, JoyInput joyInput,
+                               int joyId, String name) {
+        this.inputManager = inputManager;
+        this.joyInput = joyInput;
+        this.joyId = joyId;
+        this.name = name;
     }
     
-    public void setInputListener(RawInputListener listener) {
-        this.listener = listener;
+    public InputManager getInputManager() {
+        return inputManager;
     }
     
-    public RawInputListener getInputListener() {
-        return listener;
+    public JoyInput getJoyInput() {
+        return joyInput; 
     }
 
-    public void update() {
-        if (!inited)
-            throw new IllegalStateException("Input not initialized.");
-        
-        for (JoyButtonEvent evt : buttonQueue) {
-            listener.onJoyButtonEvent(evt);
-		}
-        for (JoyAxisEvent evt : axisQueue) {
-            listener.onJoyAxisEvent(evt);
-		}
+    public void addAxis( JoystickAxis axis ) {
+        axes.add(axis);
     }
 
-    public void destroy() {
-        if (!inited)
-            throw new IllegalStateException("Input not initialized.");
-
-        inited = false;
+    public void addButton( JoystickButton button ) {
+        buttons.add(button);
     }
 
-    public boolean isInitialized() {
-        return inited;
+    /**
+     * Rumbles the joystick for the given amount/magnitude.
+     *
+     * @param amount The amount to rumble. Should be between 0 and 1.
+     */
+    @Override
+    public void rumble(float amount){
+        joyInput.setJoyRumble(joyId, amount);
     }
 
-    public long getInputTimeNanos() {
-        return System.currentTimeMillis() * 1000000;
+    /**
+     * Assign the mapping name to receive events from the given button index
+     * on the joystick.
+     *
+     * @param mappingName The mapping to receive joystick button events.
+     * @param buttonId The button index.
+     *
+     * @see Joystick#getButtonCount()
+     * @deprecated Use JoystickButton.assignButton() instead.
+     */
+    @Override
+    public void assignButton(String mappingName, int buttonId){
+        if (buttonId < 0 || buttonId >= getButtonCount())
+            throw new IllegalArgumentException();
+
+        inputManager.addMapping(mappingName, new JoyButtonTrigger(joyId, buttonId));
+    }
+
+    /**
+     * Assign the mappings to receive events from the given joystick axis.
+     *
+     * @param positiveMapping The mapping to receive events when the axis is negative
+     * @param negativeMapping The mapping to receive events when the axis is positive
+     * @param axisId The axis index.
+     *
+     * @see Joystick#getAxisCount()
+     * @deprecated Use JoystickAxis.assignAxis() instead.
+     */
+    @Override
+    public void assignAxis(String positiveMapping, String negativeMapping, int axisId){
+    
+        // For backwards compatibility
+        if( axisId == JoyInput.AXIS_POV_X ) {
+            axisId = getPovXAxis().getAxisId();
+        } else if( axisId == JoyInput.AXIS_POV_Y ) {
+            axisId = getPovYAxis().getAxisId();
+        }
+    
+        inputManager.addMapping(positiveMapping, new JoyAxisTrigger(joyId, axisId, false));
+        inputManager.addMapping(negativeMapping, new JoyAxisTrigger(joyId, axisId, true));
+    }
+
+    @Override
+    public JoystickAxis getAxis(String logicalId) {
+        for( JoystickAxis axis : axes ) {
+            if( axis.getLogicalId().equals(logicalId) )
+                return axis;
+        }
+        return null;
+    }
+
+    /**
+     * Returns a read-only list of all joystick axes for this Joystick.
+     */
+    @Override
+    public List<JoystickAxis> getAxes() {
+        return Collections.unmodifiableList(axes);
+    }
+
+    /**
+     * Returns the number of axes on this joystick.
+     *
+     * @return the number of axes on this joystick.
+     */
+    @Override
+    public int getAxisCount() {
+        return axes.size();
+    } 
+
+    @Override
+    public JoystickButton getButton(String logicalId) {
+        for( JoystickButton b : buttons ) {
+            if( b.getLogicalId().equals(logicalId) )
+                return b;
+        }
+        return null;
+    }
+
+    /**
+     * Returns a read-only list of all joystick buttons for this Joystick.
+     */
+    @Override
+    public List<JoystickButton> getButtons() {
+        return Collections.unmodifiableList(buttons);
+    }     
+
+    /**
+     * Returns the number of buttons on this joystick.
+     *
+     * @return the number of buttons on this joystick.
+     */
+    @Override
+    public int getButtonCount() {
+        return buttons.size();
+    }
+    
+    /**
+     * Returns the name of this joystick.
+     *
+     * @return the name of this joystick.
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Returns the joyId of this joystick.
+     *
+     * @return the joyId of this joystick.
+     */
+    @Override
+    public int getJoyId() {
+        return joyId;
+    }
+
+    /**
+     * Gets the index number for the X axis on the joystick.
+     *
+     * <p>E.g. for most gamepads, the left control stick X axis will be returned.
+     *
+     * @return The axis index for the X axis for this joystick.
+     *
+     * @see Joystick#assignAxis(java.lang.String, java.lang.String, int)
+     */
+    @Override
+    public int getXAxisIndex(){
+        return getXAxis().getAxisId();
+    }
+
+    /**
+     * Gets the index number for the Y axis on the joystick.
+     *
+     * <p>E.g. for most gamepads, the left control stick Y axis will be returned.
+     *
+     * @return The axis index for the Y axis for this joystick.
+     *
+     * @see Joystick#assignAxis(java.lang.String, java.lang.String, int)
+     */
+    @Override
+    public int getYAxisIndex(){
+        return getYAxis().getAxisId();
+    }
+
+    @Override
+    public String toString(){
+        return "Joystick[name=" + name + ", id=" + joyId + ", buttons=" + getButtonCount()
+                                + ", axes=" + getAxisCount() + "]";
     }
 
 	@Override
-	public void setJoyRumble(int joyId, float amount) {
-		// TODO Auto-generated method stub		
+	public JoystickAxis getXAxis() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public Joystick[] loadJoysticks(InputManager inputManager) {
-		if(joystick == null){
-			//joystick = new AbstractJoystick(inputManager, this, 0, "test");
-		}
-		return new Joystick[]{joystick};
+	public JoystickAxis getYAxis() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public JoystickAxis getPovXAxis() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public JoystickAxis getPovYAxis() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
 

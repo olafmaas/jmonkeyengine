@@ -101,6 +101,14 @@ public class TestJoyInput implements JoyInput {
     public long getInputTimeNanos() {
         return System.currentTimeMillis() * 1000000;
     }
+    
+    public void setJoystick(Joystick joystick){
+    	this.joystick = joystick;
+    }
+    
+    public Joystick getJoystick(){
+    	return joystick;
+    }
 
 	@Override
 	public void setJoyRumble(int joyId, float amount) {
@@ -110,7 +118,7 @@ public class TestJoyInput implements JoyInput {
 	@Override
 	public Joystick[] loadJoysticks(InputManager inputManager) {
 		if(joystick == null){
-			//joystick = new AbstractJoystick(inputManager, this, 0, "test");
+			joystick = new TestJoystick(inputManager, this, 0, "test");
 		}
 		return new Joystick[]{joystick};
 	}
