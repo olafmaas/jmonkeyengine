@@ -1,0 +1,193 @@
+package com.jme3.input;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.jme3.input.InputManager.Mapping;
+import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.AnalogListener;
+import com.jme3.input.controls.InputListener;
+import com.jme3.input.controls.Trigger;
+import com.jme3.input.event.InputEvent;
+import com.jme3.util.IntMap;
+import com.jme3.util.SafeArrayList;
+
+public class Mapper implements IMapper, IListenerManager {
+
+	private static final Logger logger = Logger.getLogger(InputManager.class.getName());
+	private final HashMap<String, Mapping> mappings = new HashMap<String, Mapping>();
+	private final IntMap<ArrayList<Mapping>> bindings = new IntMap<ArrayList<Mapping>>();
+    private final SafeArrayList<RawInputListener> rawListeners = new SafeArrayList<RawInputListener>(RawInputListener.class);
+
+	
+    private static class Mapping {
+
+        private final String name;
+        private final ArrayList<Integer> triggers = new ArrayList<Integer>();
+        private final ArrayList<InputListener> listeners = new ArrayList<InputListener>();
+
+        public Mapping(String name) {
+            this.name = name;
+        }
+    }
+    
+    
+    /* (non-Javadoc)
+	 * @see com.jme3.input.IMapper#addMapping(java.lang.String, com.jme3.input.controls.Trigger)
+	 */
+    @Override
+	public void addMapping(String mappingName, Trigger... triggers) {
+        Mapping mapping = mappings.get(mappingName);
+        if (mapping == null) {
+            mapping = new Mapping(mappingName);
+            mappings.put(mappingName, mapping);
+        }
+
+        for (Trigger trigger : triggers) {
+            int hash = trigger.triggerHashCode();
+            ArrayList<Mapping> names = bindings.get(hash);
+            if (names == null) {
+                names = new ArrayList<Mapping>();
+                bindings.put(hash, names);
+            }
+            if (!names.contains(mapping)) {
+                names.add(mapping);
+                mapping.triggers.add(hash);
+            } else {
+                logger.log(Level.WARNING, "Attempted to add mapping \"{0}\" twice to trigger.", mappingName);
+            }
+        }
+    }
+    
+    /* (non-Javadoc)
+	 * @see com.jme3.input.IMapper#deleteMapping(java.lang.String)
+	 */
+    @Override
+	public void deleteMapping(String mappingName) {
+        Mapping mapping = mappings.remove(mappingName);
+        if (mapping == null) {
+            //throw new IllegalArgumentException("Cannot find mapping: " + mappingName);
+            logger.log(Level.WARNING, "Cannot find mapping to be removed, skipping: {0}", mappingName);
+            return;
+        }
+
+        ArrayList<Integer> triggers = mapping.triggers;
+        for (int i = triggers.size() - 1; i >= 0; i--) {
+            int hash = triggers.get(i);
+            ArrayList<Mapping> maps = bindings.get(hash);
+            maps.remove(mapping);
+        }
+    }
+    
+    /* (non-Javadoc)
+	 * @see com.jme3.input.IMapper#hasMapping(java.lang.String)
+	 */
+    @Override
+	public boolean hasMapping(String mappingName) {
+        return mappings.containsKey(mappingName);
+    }
+    
+    /* (non-Javadoc)
+	 * @see com.jme3.input.IMapper#deleteTrigger(java.lang.String, com.jme3.input.controls.Trigger)
+	 */
+    @Override
+	public void deleteTrigger(String mappingName, Trigger trigger) {
+        Mapping mapping = mappings.get(mappingName);
+        if (mapping == null) {
+            throw new IllegalArgumentException("Cannot find mapping: " + mappingName);
+        }
+
+        ArrayList<Mapping> maps = bindings.get(trigger.triggerHashCode());
+        maps.remove(mapping);
+
+    }
+    
+    /* (non-Javadoc)
+	 * @see com.jme3.input.IListenerManager#addListener(com.jme3.input.controls.InputListener, java.lang.String)
+	 */
+    @Override
+	public void addListener(InputListener listener, String... mappingNames) {
+        for (String mappingName : mappingNames) {
+            Mapping mapping = mappings.get(mappingName);
+            if (mapping == null) {
+                mapping = new Mapping(mappingName);
+                mappings.put(mappingName, mapping);
+            }
+            if (!mapping.listeners.contains(listener)) {
+                mapping.listeners.add(listener);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+	 * @see com.jme3.input.IListenerManager#removeListener(com.jme3.input.controls.InputListener)
+	 */
+    @Override
+	public void removeListener(InputListener listener) {
+        for (Mapping mapping : mappings.values()) {
+            mapping.listeners.remove(listener);
+        }
+    }
+    
+    
+    /* (non-Javadoc)
+	 * @see com.jme3.input.IMapper#clearMappings()
+	 */
+    @Override
+	public void clearMappings() {
+        mappings.clear();
+        bindings.clear();
+        
+        //TODO: Reset Callback oid
+        reset();
+    }
+    
+    /**
+     * Adds a {@link RawInputListener} to receive raw input events.
+     *
+     * <p>
+     * Any raw input listeners registered to this <code>InputManager</code>
+     * will receive raw input events first, before they get handled
+     * by the <code>InputManager</code> itself. The listeners are
+     * each processed in the order they were added, e.g. FIFO.
+     * <p>
+     * If a raw input listener has handled the event and does not wish
+     * other listeners down the list to process the event, it may set the
+     * {@link InputEvent#setConsumed() consumed flag} to indicate the
+     * event was consumed and shouldn't be processed any further.
+     * The listener may do this either at each of the event callbacks
+     * or at the {@link RawInputListener#endInput() } method.
+     *
+     * @param listener A listener to receive raw input events.
+     *
+     * @see RawInputListener
+     */
+    public void addRawInputListener(RawInputListener listener) {
+        rawListeners.add(listener);
+    }
+
+    /**
+     * Removes a {@link RawInputListener} so that it no longer
+     * receives raw input events.
+     *
+     * @param listener The listener to cease receiving raw input events.
+     *
+     * @see InputManager#addRawInputListener(com.jme3.input.RawInputListener)
+     */
+    public void removeRawInputListener(RawInputListener listener) {
+        rawListeners.remove(listener);
+    }
+
+    /**
+     * Clears all {@link RawInputListener}s.
+     *
+     * @see InputManager#addRawInputListener(com.jme3.input.RawInputListener)
+     */
+    public void clearRawInputListeners() {
+        rawListeners.clear();
+    }
+    
+    
+}
