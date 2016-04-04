@@ -10,13 +10,11 @@ public class MouseEventProcessor implements EventProcessor {
 
 	@Override
 	public void processEvent(InputEvent event) {
-		if(event instanceof MouseButtonEvent)
-		{
+		if(event instanceof MouseButtonEvent) {
 			onMouseButtonEventQueued((MouseButtonEvent) event);
-		}else{
+		} else if(event instanceof MouseMotionEvent) {
 			onMouseMotionEventQueued((MouseMotionEvent) event);
 		}
-
 	}
 
     private void onMouseButtonEventQueued(MouseButtonEvent evt) {
