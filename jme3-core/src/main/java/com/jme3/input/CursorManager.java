@@ -3,7 +3,7 @@ package com.jme3.input;
 import com.jme3.cursors.plugins.JmeCursor;
 import com.jme3.math.Vector2f;
 
-public class CursorManager {
+public class CursorManager implements ICursorPos{
 
 	
 	private final Vector2f cursorPos = new Vector2f();
@@ -43,7 +43,8 @@ public class CursorManager {
     public boolean isCursorVisible() {
         return mouseVisible;
     }
-
+    
+    
     /**
      * Set whether the mouse cursor should be visible or not.
      *
@@ -101,4 +102,9 @@ public class CursorManager {
             return false;
         }
     }
+
+	@Override
+	public void setCursorPosition(float x, float y) {
+		cursorPos.set(x,y);
+	}
 }

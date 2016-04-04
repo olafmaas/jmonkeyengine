@@ -151,77 +151,7 @@ public class InputManager implements RawInputListener {
     }
 
 
- 
 
-    /**
-     * Callback from RawInputListener. Do not use.
-     */
-    @Override
-    public void onJoyAxisEvent(JoyAxisEvent evt) {
-        if (!eventsPermitted) {
-            throw new UnsupportedOperationException("JoyInput has raised an event at an illegal time.");
-        }
-
-        inputQueue.add(evt);
-    }
-
-
-
-    /**
-     * Callback from RawInputListener. Do not use.
-     */
-    @Override
-    public void onJoyButtonEvent(JoyButtonEvent evt) {
-        if (!eventsPermitted) {
-            throw new UnsupportedOperationException("JoyInput has raised an event at an illegal time.");
-        }
-
-        inputQueue.add(evt);
-    }
-
-
-
-
-
-    /**
-     * Callback from RawInputListener. Do not use.
-     */
-    @Override
-    public void onMouseMotionEvent(MouseMotionEvent evt) {
-        if (!eventsPermitted) {
-            throw new UnsupportedOperationException("MouseInput has raised an event at an illegal time.");
-        }
-
-        cursorPos.set(evt.getX(), evt.getY());
-        inputQueue.add(evt);
-    }
-
-
-
-    /**
-     * Callback from RawInputListener. Do not use.
-     */
-    @Override
-    public void onMouseButtonEvent(MouseButtonEvent evt) {
-        if (!eventsPermitted) {
-            throw new UnsupportedOperationException("MouseInput has raised an event at an illegal time.");
-        }
-        //updating cursor pos on click, so that non android touch events can properly update cursor position.
-        cursorPos.set(evt.getX(), evt.getY());
-        inputQueue.add(evt);
-    }
-
-    /**
-     * Callback from RawInputListener. Do not use.
-     */
-    @Override
-    public void onKeyEvent(KeyInputEvent evt) {
-        if (!eventsPermitted) {
-            throw new UnsupportedOperationException("KeyInput has raised an event at an illegal time.");
-        }
-
-        inputQueue.add(evt);
-    }
 
 
 
@@ -235,15 +165,5 @@ public class InputManager implements RawInputListener {
     }
 
 
-    /**
-     * Callback from RawInputListener. Do not use.
-     */
-    @Override
-    public void onTouchEvent(TouchEvent evt) {
-        if (!eventsPermitted) {
-            throw new UnsupportedOperationException("TouchInput has raised an event at an illegal time.");
-        }
-        cursorPos.set(evt.getX(), evt.getY());
-        inputQueue.add(evt);
-    }
+
 }

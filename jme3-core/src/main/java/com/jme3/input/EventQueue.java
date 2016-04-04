@@ -1,5 +1,7 @@
 package com.jme3.input;
 
+import java.util.ArrayList;
+
 import com.jme3.app.Application;
 import com.jme3.input.event.InputEvent;
 import com.jme3.input.event.JoyAxisEvent;
@@ -9,7 +11,7 @@ import com.jme3.input.event.MouseButtonEvent;
 import com.jme3.input.event.MouseMotionEvent;
 import com.jme3.input.event.TouchEvent;
 
-public class EventQueue implements RawInputListener{
+public class EventQueue implements RawInputListener, IEventQueue{
 	
     private float frameTPF;
     private long firstTime = 0;
@@ -22,6 +24,7 @@ public class EventQueue implements RawInputListener{
     private final MouseInput mouse;
     private final JoyInput joystick;
     private final TouchInput touch;
+    private final ArrayList<InputEvent> inputQueue = new ArrayList<InputEvent>();
     
     /**
      * Initializes the InputManager.
@@ -160,4 +163,12 @@ public class EventQueue implements RawInputListener{
 
         inputQueue.clear();
     }
+
+
+	@Override
+	public void add(InputEvent event) {
+		// TODO Auto-generated method stub
+		 inputQueue.add(event);
+	}
+
 }
