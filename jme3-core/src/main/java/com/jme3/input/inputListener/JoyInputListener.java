@@ -15,8 +15,7 @@ public class JoyInputListener extends BaseInputListener{
 	        if (!eventsPermitted) {
 	            throw new UnsupportedOperationException("JoyInput has raised an event at an illegal time.");
 	        }
-
-	        cursorPos.set(evt.getX(), evt.getY());
+	        
 	        inputQueue.add(event);
 		}
 	}

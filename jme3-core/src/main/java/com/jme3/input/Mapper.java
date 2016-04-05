@@ -19,7 +19,6 @@ public class Mapper implements IMapper, IListenerManager {
 	private static final Logger logger = Logger.getLogger(InputManager.class.getName());
 	private final HashMap<String, Mapping> mappings = new HashMap<String, Mapping>();
 	private final IntMap<ArrayList<Mapping>> bindings = new IntMap<ArrayList<Mapping>>();
-    private final SafeArrayList<RawInputListener> rawListeners = new SafeArrayList<RawInputListener>(RawInputListener.class);
 
 	
     private static class Mapping {
@@ -144,50 +143,7 @@ public class Mapper implements IMapper, IListenerManager {
         reset();
     }
     
-    /**
-     * Adds a {@link RawInputListener} to receive raw input events.
-     *
-     * <p>
-     * Any raw input listeners registered to this <code>InputManager</code>
-     * will receive raw input events first, before they get handled
-     * by the <code>InputManager</code> itself. The listeners are
-     * each processed in the order they were added, e.g. FIFO.
-     * <p>
-     * If a raw input listener has handled the event and does not wish
-     * other listeners down the list to process the event, it may set the
-     * {@link InputEvent#setConsumed() consumed flag} to indicate the
-     * event was consumed and shouldn't be processed any further.
-     * The listener may do this either at each of the event callbacks
-     * or at the {@link RawInputListener#endInput() } method.
-     *
-     * @param listener A listener to receive raw input events.
-     *
-     * @see RawInputListener
-     */
-    public void addRawInputListener(RawInputListener listener) {
-        rawListeners.add(listener);
-    }
 
-    /**
-     * Removes a {@link RawInputListener} so that it no longer
-     * receives raw input events.
-     *
-     * @param listener The listener to cease receiving raw input events.
-     *
-     * @see InputManager#addRawInputListener(com.jme3.input.RawInputListener)
-     */
-    public void removeRawInputListener(RawInputListener listener) {
-        rawListeners.remove(listener);
-    }
-
-    /**
-     * Clears all {@link RawInputListener}s.
-     *
-     * @see InputManager#addRawInputListener(com.jme3.input.RawInputListener)
-     */
-    public void clearRawInputListeners() {
-        rawListeners.clear();
-    }
     
     
 }

@@ -34,8 +34,5 @@ public abstract class BaseInputListener {
     	eventsPermitted = false;
     }
     
-    public void onEvent(InputEvent event)
-    {
-    	
-    }
+    public abstract void onEvent(InputEvent event);
 }

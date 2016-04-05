@@ -10,6 +10,7 @@ import com.jme3.input.event.KeyInputEvent;
 import com.jme3.input.event.MouseButtonEvent;
 import com.jme3.input.event.MouseMotionEvent;
 import com.jme3.input.event.TouchEvent;
+import com.jme3.input.IEventProcessorEmitter;
 
 public class EventQueue implements RawInputListener, IEventQueue{
 	
@@ -25,6 +26,8 @@ public class EventQueue implements RawInputListener, IEventQueue{
     private final JoyInput joystick;
     private final TouchInput touch;
     private final ArrayList<InputEvent> inputQueue = new ArrayList<InputEvent>();
+    private IBaseListenerEmitter baselisteners;
+    private IEventProcessorEmitter eventprocessors;
     
     /**
      * Initializes the InputManager.
@@ -37,7 +40,8 @@ public class EventQueue implements RawInputListener, IEventQueue{
      * @param touch
      * @throws IllegalArgumentException If either mouseInput or keyInput are null.
      */
-    public EventQueue(MouseInput mouse, KeyInput keys, JoyInput joystick, TouchInput touch) {
+    public EventQueue(MouseInput mouse, KeyInput keys, JoyInput joystick, TouchInput touch, 
+    		IBaseListenerEmitter blemitter, IEventProcessorEmitter evpemitter  ) {
         if (keys == null || mouse == null) {
             throw new IllegalArgumentException("Mouse or keyboard cannot be null");
         }
@@ -57,6 +61,9 @@ public class EventQueue implements RawInputListener, IEventQueue{
             touch.setInputListener(this);
         }
 
+        baselisteners = blemitter;
+        eventprocessors = evpemitter;
+        
         firstTime = keys.getInputTimeNanos();
     }
     
@@ -100,66 +107,10 @@ public class EventQueue implements RawInputListener, IEventQueue{
     
     private void processQueue() {
         int queueSize = inputQueue.size();
-        RawInputListener[] array = rawListeners.getArray(); 
+        
+        baselisteners.emit(inputQueue);
 
-        for (RawInputListener listener : array) {
-            listener.beginInput();
-
-            for (int j = 0; j < queueSize; j++) {
-                InputEvent event = inputQueue.get(j);
-                if (event.isConsumed()) {
-                    continue;
-                }
-
-                if (event instanceof MouseMotionEvent) {
-                    listener.onMouseMotionEvent((MouseMotionEvent) event);
-                } else if (event instanceof KeyInputEvent) {
-                    listener.onKeyEvent((KeyInputEvent) event);
-                } else if (event instanceof MouseButtonEvent) {
-                    listener.onMouseButtonEvent((MouseButtonEvent) event);
-                } else if (event instanceof JoyAxisEvent) {
-                    listener.onJoyAxisEvent((JoyAxisEvent) event);
-                } else if (event instanceof JoyButtonEvent) {
-                    listener.onJoyButtonEvent((JoyButtonEvent) event);
-                } else if (event instanceof TouchEvent) {
-                    listener.onTouchEvent((TouchEvent) event);
-                } else {
-                    assert false;
-                }
-            }
-
-            listener.endInput();
-        }
-
-        for (int i = 0; i < queueSize; i++) {
-            InputEvent event = inputQueue.get(i);
-            if (event.isConsumed()) {
-                continue;
-            }
-
-            
-            //TODO: Eventprocessor
-            if (event instanceof MouseMotionEvent) {
-                onMouseMotionEventQueued((MouseMotionEvent) event);
-            } else if (event instanceof KeyInputEvent) {
-                //onKeyEventQueued((KeyInputEvent) event);
-            } else if (event instanceof MouseButtonEvent) {
-                //onMouseButtonEventQueued((MouseButtonEvent) event);
-            } else if (event instanceof JoyAxisEvent) {
-                //onJoyAxisEventQueued((JoyAxisEvent) event);
-            } else if (event instanceof JoyButtonEvent) {
-                //onJoyButtonEventQueued((JoyButtonEvent) event);
-            } else if (event instanceof TouchEvent) {
-                //onTouchEventQueued((TouchEvent) event);
-            } else {
-                assert false;
-            }
-            // larynx, 2011.06.10 - flag event as reusable because
-            // the android input uses a non-allocating ringbuffer which
-            // needs to know when the event is not anymore in inputQueue
-            // and therefor can be reused.
-            event.setConsumed();
-        }
+        eventprocessors.emit(inputQueue);
 
         inputQueue.clear();
     }
