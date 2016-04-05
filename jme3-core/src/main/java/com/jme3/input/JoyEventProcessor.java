@@ -14,6 +14,8 @@ public class JoyEventProcessor implements EventProcessor {
 	private ActionInvoker invoker;
 	private IReadInputSettings settings;
 	
+	
+	
 	public JoyEventProcessor(ActionInvoker ai, IReadInputSettings irs)
 	{
 		invoker = ai;

@@ -1,6 +1,6 @@
 package com.jme3.input;
 
-public class InputSettings implements IReadInputSettings {
+public class InputSettings implements IReadInputSettings, ISetInputSettings {
 
     private float frameTPF;
     private float globalAxisDeadZone = 0.05f;
@@ -13,6 +13,10 @@ public class InputSettings implements IReadInputSettings {
 	public float getFrameTPF() {
 		return frameTPF;
 	}
+	/* (non-Javadoc)
+	 * @see com.jme3.input.ISetInputSettings#setFrameTPF(float)
+	 */
+	@Override
 	public void setFrameTPF(float frameTPF) {
 		this.frameTPF = frameTPF;
 	}
@@ -23,10 +27,18 @@ public class InputSettings implements IReadInputSettings {
 	public float getGlobalAxisDeadZone() {
 		return globalAxisDeadZone;
 	}
+	/* (non-Javadoc)
+	 * @see com.jme3.input.ISetInputSettings#setGlobalAxisDeadZone(float)
+	 */
+	@Override
 	public void setGlobalAxisDeadZone(float globalAxisDeadZone) {
 		this.globalAxisDeadZone = globalAxisDeadZone;
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.jme3.input.ISetInputSettings#setSafeMode(boolean)
+	 */
+	@Override
 	public void setSafeMode(boolean s)
 	{
 		safemode = s;

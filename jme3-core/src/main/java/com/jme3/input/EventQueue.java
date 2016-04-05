@@ -12,22 +12,16 @@ import com.jme3.input.event.MouseMotionEvent;
 import com.jme3.input.event.TouchEvent;
 import com.jme3.input.IEventProcessorEmitter;
 
-public class EventQueue implements RawInputListener, IEventQueue{
+public class EventQueue implements RawInputListener, IEventQueue, IQueueProcessor{
 	
-    private float frameTPF;
-    private long firstTime = 0;
-    private boolean safeMode = false;
     private final KeyInput keys;
-    private long frameDelta = 0;
-    private boolean eventsPermitted = false;
-    private long lastUpdateTime = 0;
-    private long lastLastUpdateTime = 0;
     private final MouseInput mouse;
     private final JoyInput joystick;
     private final TouchInput touch;
     private final ArrayList<InputEvent> inputQueue = new ArrayList<InputEvent>();
     private IBaseListenerEmitter baselisteners;
     private IEventProcessorEmitter eventprocessors;
+    private InputTimer timer;
     
     /**
      * Initializes the InputManager.
@@ -41,7 +35,7 @@ public class EventQueue implements RawInputListener, IEventQueue{
      * @throws IllegalArgumentException If either mouseInput or keyInput are null.
      */
     public EventQueue(MouseInput mouse, KeyInput keys, JoyInput joystick, TouchInput touch, 
-    		IBaseListenerEmitter blemitter, IEventProcessorEmitter evpemitter  ) {
+    		IBaseListenerEmitter blemitter, IEventProcessorEmitter evpemitter, InputTimer ipt ) {
         if (keys == null || mouse == null) {
             throw new IllegalArgumentException("Mouse or keyboard cannot be null");
         }
@@ -50,6 +44,8 @@ public class EventQueue implements RawInputListener, IEventQueue{
         this.mouse = mouse;
         this.joystick = joystick;
         this.touch = touch;
+        
+        this.timer = ipt;
 
         keys.setInputListener(this);
         mouse.setInputListener(this);
@@ -68,44 +64,13 @@ public class EventQueue implements RawInputListener, IEventQueue{
     }
     
     
-    /**
-     * Updates the <code>InputManager</code>.
-     * This will query current input devices and send
-     * appropriate events to registered listeners.
-     *
-     * @param tpf Time per frame value.
-     */
-    public void update(float tpf) {
-        frameTPF = tpf;
 
-        // Activate safemode if the TPF value is so small
-        // that rounding errors are inevitable
-        safeMode = tpf < 0.015f;
-
-        long currentTime = keys.getInputTimeNanos();
-        frameDelta = currentTime - lastUpdateTime;
-
-        eventsPermitted = true;
-
-        keys.update();
-        mouse.update();
-        if (joystick != null) {
-            joystick.update();
-        }
-        if (touch != null) {
-            touch.update();
-        }
-
-        eventsPermitted = false;
-
-        processQueue();
-        invokeUpdateActions();
-
-        lastLastUpdateTime = lastUpdateTime;
-        lastUpdateTime = currentTime;
-    }
     
-    private void processQueue() {
+    /* (non-Javadoc)
+	 * @see com.jme3.input.IQueueProcessor#processQueue()
+	 */
+    @Override
+	public void processQueue() {
         int queueSize = inputQueue.size();
         
         baselisteners.emit(inputQueue);
@@ -118,7 +83,6 @@ public class EventQueue implements RawInputListener, IEventQueue{
 
 	@Override
 	public void add(InputEvent event) {
-		// TODO Auto-generated method stub
 		 inputQueue.add(event);
 	}
 

@@ -31,6 +31,8 @@
  */
 package com.jme3.input;
 
+import com.jme3.input.inputListener.BaseInputListener;
+
 /**
  * Abstract interface for an input device.
  * 
@@ -71,7 +73,7 @@ public interface Input {
      * in RawInputListener.
      * @param listener
      */
-    public void setInputListener(RawInputListener listener);
+    public void setInputListener(BaseInputListener listener);
 
     /**
      * @return The current absolute time as nanoseconds. This time is expected
