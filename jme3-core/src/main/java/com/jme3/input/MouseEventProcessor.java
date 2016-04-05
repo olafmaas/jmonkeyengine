@@ -8,6 +8,15 @@ import com.jme3.input.event.MouseMotionEvent;
 
 public class MouseEventProcessor implements EventProcessor {
 
+	private ActionInvoker invoker;
+	private IReadInputSettings settings;
+	
+	public MouseEventProcessor(ActionInvoker ai, IReadInputSettings irs)
+	{
+		invoker = ai;
+		settings = irs;
+	}
+	
 	@Override
 	public void processEvent(InputEvent event) {
 		if(event instanceof MouseButtonEvent) {
@@ -19,8 +28,8 @@ public class MouseEventProcessor implements EventProcessor {
 
     private void onMouseButtonEventQueued(MouseButtonEvent evt) {
         int hash = MouseButtonTrigger.mouseButtonHash(evt.getButtonIndex());
-        invokeActions(hash, evt.isPressed());
-        invokeTimedActions(hash, evt.getTime(), evt.isPressed());
+        invoker.invokeActions(hash, evt.isPressed());
+        invoker.invokeTimedActions(hash, evt.getTime(), evt.isPressed());
     }
 	
     
@@ -28,15 +37,18 @@ public class MouseEventProcessor implements EventProcessor {
 
       if (evt.getDX() != 0) {
           float val = Math.abs(evt.getDX()) / 1024f;
-          invokeAnalogsAndActions(MouseAxisTrigger.mouseAxisHash(MouseInput.AXIS_X, evt.getDX() < 0), val, globalAxisDeadZone, false);
+          invoker.invokeAnalogsAndActions(MouseAxisTrigger.mouseAxisHash(MouseInput.AXIS_X, evt.getDX() < 0), 
+        		  val, settings.getGlobalAxisDeadZone(), false);
       }
       if (evt.getDY() != 0) {
           float val = Math.abs(evt.getDY()) / 1024f;
-          invokeAnalogsAndActions(MouseAxisTrigger.mouseAxisHash(MouseInput.AXIS_Y, evt.getDY() < 0), val, globalAxisDeadZone, false);
+          invoker.invokeAnalogsAndActions(MouseAxisTrigger.mouseAxisHash(MouseInput.AXIS_Y, evt.getDY() < 0), 
+        		  val, settings.getGlobalAxisDeadZone(), false);
       }
       if (evt.getDeltaWheel() != 0) {
           float val = Math.abs(evt.getDeltaWheel()) / 100f;
-          invokeAnalogsAndActions(MouseAxisTrigger.mouseAxisHash(MouseInput.AXIS_WHEEL, evt.getDeltaWheel() < 0), val, globalAxisDeadZone, false);
+          invoker.invokeAnalogsAndActions(MouseAxisTrigger.mouseAxisHash(MouseInput.AXIS_WHEEL, evt.getDeltaWheel() < 0), 
+        		  val, settings.getGlobalAxisDeadZone(), false);
       }
     }
 	

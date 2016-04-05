@@ -11,6 +11,16 @@ public class JoyEventProcessor implements EventProcessor {
 
     private final IntMap<Float> axisValues = new IntMap<Float>();
 	
+	private ActionInvoker invoker;
+	private IReadInputSettings settings;
+	
+	public JoyEventProcessor(ActionInvoker ai, IReadInputSettings irs)
+	{
+		invoker = ai;
+		settings = irs;
+	}
+    
+    
 	@Override
 	public void processEvent(InputEvent event) {
 		// TODO Auto-generated method stub
@@ -22,14 +32,11 @@ public class JoyEventProcessor implements EventProcessor {
 	}
 
    private void onJoyAxisEventQueued(JoyAxisEvent evt) {
-//	        for (int i = 0; i < rawListeners.size(); i++){
-//	            rawListeners.get(i).onJoyAxisEvent(evt);
-//	        }
 	   
         int joyId = evt.getJoyIndex();
         int axis = evt.getAxisIndex();
         float value = evt.getValue();
-        float effectiveDeadZone = Math.max(globalAxisDeadZone, evt.getAxis().getDeadZone()); 
+        float effectiveDeadZone = Math.max(settings.getGlobalAxisDeadZone(), evt.getAxis().getDeadZone()); 
         if (value < effectiveDeadZone && value > -effectiveDeadZone) {
             int hash1 = JoyAxisTrigger.joyAxisHash(joyId, axis, true);
             int hash2 = JoyAxisTrigger.joyAxisHash(joyId, axis, false);
@@ -38,10 +45,10 @@ public class JoyEventProcessor implements EventProcessor {
             Float val2 = axisValues.get(hash2);
 
             if (val1 != null && val1 > effectiveDeadZone) {
-                invokeActions(hash1, false);
+                invoker.invokeActions(hash1, false);
             }
             if (val2 != null && val2 > effectiveDeadZone) {
-                invokeActions(hash2, false);
+            	invoker.invokeActions(hash2, false);
             }
 
             axisValues.remove(hash1);
@@ -55,10 +62,10 @@ public class JoyEventProcessor implements EventProcessor {
             // crossed center too quickly
             Float otherVal = axisValues.get(otherHash);
             if (otherVal != null && otherVal > effectiveDeadZone) {
-                invokeActions(otherHash, false);
+                invoker.invokeActions(otherHash, false);
             }
 
-            invokeAnalogsAndActions(hash, -value, effectiveDeadZone, true);
+            invoker.invokeAnalogsAndActions(hash, -value, effectiveDeadZone, true, axisValues);
             axisValues.put(hash, -value);
             axisValues.remove(otherHash);
         } else {
@@ -69,23 +76,20 @@ public class JoyEventProcessor implements EventProcessor {
             // crossed center too quickly
             Float otherVal = axisValues.get(otherHash);
             if (otherVal != null && otherVal > effectiveDeadZone) {
-                invokeActions(otherHash, false);
+                invoker.invokeActions(otherHash, false);
             }
 
-            invokeAnalogsAndActions(hash, value, effectiveDeadZone, true);
+            invoker.invokeAnalogsAndActions(hash, value, effectiveDeadZone, true, axisValues);
             axisValues.put(hash, value);
             axisValues.remove(otherHash);
         }
     }
 	   
     private void onJoyButtonEventQueued(JoyButtonEvent evt) {
-//	        for (int i = 0; i < rawListeners.size(); i++){
-//	            rawListeners.get(i).onJoyButtonEvent(evt);
-//	        }
-
         int hash = JoyButtonTrigger.joyButtonHash(evt.getJoyIndex(), evt.getButtonIndex());
-        invokeActions(hash, evt.isPressed());
-        invokeTimedActions(hash, evt.getTime(), evt.isPressed());
+        
+        invoker.invokeActions(hash, evt.isPressed());
+        invoker.invokeTimedActions(hash, evt.getTime(), evt.isPressed());
     }   
 	
 	

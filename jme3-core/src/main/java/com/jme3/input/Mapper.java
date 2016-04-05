@@ -2,6 +2,7 @@ package com.jme3.input;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,24 +14,15 @@ import com.jme3.input.controls.Trigger;
 import com.jme3.input.event.InputEvent;
 import com.jme3.util.IntMap;
 import com.jme3.util.SafeArrayList;
+import com.jme3.input.Mapping;
 
-public class Mapper implements IMapper, IListenerManager {
+public class Mapper implements IMapper, IListenerManager, IReadBindings {
 
 	private static final Logger logger = Logger.getLogger(InputManager.class.getName());
 	private final HashMap<String, Mapping> mappings = new HashMap<String, Mapping>();
 	private final IntMap<ArrayList<Mapping>> bindings = new IntMap<ArrayList<Mapping>>();
 
-	
-    private static class Mapping {
 
-        private final String name;
-        private final ArrayList<Integer> triggers = new ArrayList<Integer>();
-        private final ArrayList<InputListener> listeners = new ArrayList<InputListener>();
-
-        public Mapping(String name) {
-            this.name = name;
-        }
-    }
     
     
     /* (non-Javadoc)
@@ -128,6 +120,16 @@ public class Mapper implements IMapper, IListenerManager {
         for (Mapping mapping : mappings.values()) {
             mapping.listeners.remove(listener);
         }
+    }
+    
+    public List<Mapping> getMappings(int hash)
+    {
+    	return bindings.get(hash);
+    }
+    
+    public boolean contains(int hash)
+    {
+    	return bindings.containsKey(hash);
     }
     
     

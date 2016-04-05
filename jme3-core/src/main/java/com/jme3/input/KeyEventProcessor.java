@@ -6,9 +6,18 @@ import com.jme3.input.event.KeyInputEvent;
 
 public class KeyEventProcessor implements EventProcessor {
 
+	private ActionInvoker invoker;
+	
+	public KeyEventProcessor(ActionInvoker ai)
+	{
+		invoker = ai;
+	}
+	
 	@Override
 	public void processEvent(InputEvent event) {
-		onKeyEventQueued((KeyInputEvent) event);
+		if(event instanceof KeyInputEvent){
+			onKeyEventQueued((KeyInputEvent) event);
+		}
 	}
 	
     private void onKeyEventQueued(KeyInputEvent evt) {
@@ -17,8 +26,8 @@ public class KeyEventProcessor implements EventProcessor {
         }
 
         int hash = KeyTrigger.keyHash(evt.getKeyCode());
-        invokeActions(hash, evt.isPressed());
-        invokeTimedActions(hash, evt.getTime(), evt.isPressed());
+        invoker.invokeActions(hash, evt.isPressed());
+        invoker.invokeTimedActions(hash, evt.getTime(), evt.isPressed());
     }
 
 	@Override
