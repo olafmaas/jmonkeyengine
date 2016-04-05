@@ -8,13 +8,15 @@ public class InputUpdater {
     private ActionInvoker ai;
     private IQueueProcessor proc;
     private List<Input> inputDevices;
+    private ISetInputSettings settings;
 	
     //inpDevices should be initialized
-    public InputUpdater(InputTimer ipt, ActionInvoker ai, IQueueProcessor iq, List<Input> inputDevices) {
+    public InputUpdater(InputTimer ipt, ActionInvoker ai, IQueueProcessor iq, List<Input> inputDevices, ISetInputSettings isi) {
     	timer = ipt;
     	this.ai = ai;
     	proc = iq;
     	this.inputDevices = inputDevices;
+    	settings = isi;
     }
 	
     /**
@@ -25,12 +27,12 @@ public class InputUpdater {
      * @param tpf Time per frame value.
      */
     public void update(float tpf) {
-        frameTPF = tpf;
+        settings.setFrameTPF(tpf);
 
         
         // Activate safemode if the TPF value is so small
         // that rounding errors are inevitable
-        safeMode = tpf < 0.015f;
+        settings.setSafeMode(tpf < 0.015f);
 
         long currentTime = java.lang.System.currentTimeMillis();
         timer.setFrameDelta(currentTime - timer.getLastUpdateTime());

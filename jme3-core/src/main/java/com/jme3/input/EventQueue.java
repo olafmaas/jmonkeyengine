@@ -12,12 +12,8 @@ import com.jme3.input.event.MouseMotionEvent;
 import com.jme3.input.event.TouchEvent;
 import com.jme3.input.IEventProcessorEmitter;
 
-public class EventQueue implements RawInputListener, IEventQueue, IQueueProcessor{
+public class EventQueue implements IEventQueue, IQueueProcessor{
 	
-    private final KeyInput keys;
-    private final MouseInput mouse;
-    private final JoyInput joystick;
-    private final TouchInput touch;
     private final ArrayList<InputEvent> inputQueue = new ArrayList<InputEvent>();
     private IBaseListenerEmitter baselisteners;
     private IEventProcessorEmitter eventprocessors;
@@ -34,33 +30,14 @@ public class EventQueue implements RawInputListener, IEventQueue, IQueueProcesso
      * @param touch
      * @throws IllegalArgumentException If either mouseInput or keyInput are null.
      */
-    public EventQueue(MouseInput mouse, KeyInput keys, JoyInput joystick, TouchInput touch, 
-    		IBaseListenerEmitter blemitter, IEventProcessorEmitter evpemitter, InputTimer ipt ) {
-        if (keys == null || mouse == null) {
-            throw new IllegalArgumentException("Mouse or keyboard cannot be null");
-        }
-
-        this.keys = keys;
-        this.mouse = mouse;
-        this.joystick = joystick;
-        this.touch = touch;
+    public EventQueue( IBaseListenerEmitter blemitter, IEventProcessorEmitter evpemitter, InputTimer ipt ) {
         
         this.timer = ipt;
-
-        keys.setInputListener(this);
-        mouse.setInputListener(this);
-        if (joystick != null) {
-            joystick.setInputListener(this);
-            joysticks = joystick.loadJoysticks(this);
-        }
-        if (touch != null) {
-            touch.setInputListener(this);
-        }
 
         baselisteners = blemitter;
         eventprocessors = evpemitter;
         
-        firstTime = keys.getInputTimeNanos();
+
     }
     
     
