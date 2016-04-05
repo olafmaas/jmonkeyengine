@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /*
  * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
@@ -41,6 +40,7 @@ import com.jme3.math.Vector2f;
 import com.jme3.util.IntMap;
 import com.jme3.util.IntMap.Entry;
 import com.jme3.util.SafeArrayList;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -87,17 +87,6 @@ public class InputManager implements RawInputListener {
 
 	Mapper mapper;
 	CursorManager cm;
-
-    private static class Mapping {
-
-        private final String name;
-        private final ArrayList<Integer> triggers = new ArrayList<Integer>();
-        private final ArrayList<InputListener> listeners = new ArrayList<InputListener>();
-
-        public Mapping(String name) {
-            this.name = name;
-        }
-    }
 
     /**
      * Initializes the InputManager.
@@ -192,6 +181,54 @@ public class InputManager implements RawInputListener {
     {
     	cm.setCursorVisible(true);
     }
+
+	@Override
+	public void beginInput() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void endInput() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onJoyAxisEvent(JoyAxisEvent evt) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onJoyButtonEvent(JoyButtonEvent evt) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMouseMotionEvent(MouseMotionEvent evt) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMouseButtonEvent(MouseButtonEvent evt) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onKeyEvent(KeyInputEvent evt) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onTouchEvent(TouchEvent evt) {
+		// TODO Auto-generated method stub
+		
+	}
 
 
 
