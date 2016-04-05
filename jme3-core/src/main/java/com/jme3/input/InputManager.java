@@ -84,26 +84,8 @@ import java.util.logging.Logger;
  */
 public class InputManager implements RawInputListener {
 
-    private static final Logger logger = Logger.getLogger(InputManager.class.getName());
-    private final KeyInput keys;
-    
-    private final JoyInput joystick;
-    private final TouchInput touch;
-    private float frameTPF;
-    private long lastLastUpdateTime = 0;
-    private long lastUpdateTime = 0;
-    private long frameDelta = 0;
-    private long firstTime = 0;
-    private boolean eventsPermitted = false;
-    
-    private boolean safeMode = false;
-    private float globalAxisDeadZone = 0.05f;
-    
-    private Joystick[] joysticks;
-
-    private final IntMap<Long> pressedButtons = new IntMap<Long>();
-    private final IntMap<Float> axisValues = new IntMap<Float>();
-    private final ArrayList<InputEvent> inputQueue = new ArrayList<InputEvent>();
+	Mapper mapper;
+	CursorManager cm;
 
     private static class Mapping {
 
@@ -127,33 +109,49 @@ public class InputManager implements RawInputListener {
      * @param touch
      * @throws IllegalArgumentException If either mouseInput or keyInput are null.
      */
-    public InputManager(MouseInput mouse, KeyInput keys, JoyInput joystick, TouchInput touch) {
-        if (keys == null || mouse == null) {
-            throw new IllegalArgumentException("Mouse or keyboard cannot be null");
-        }
+    public InputManager(Mapper m, CursorManager cm) {
+    	this.mapper = m;
+    	this.cm = cm;
+    }
 
-        this.keys = keys;
-        this.mouse = mouse;
-        this.joystick = joystick;
-        this.touch = touch;
-
-        keys.setInputListener(this);
-        mouse.setInputListener(this);
-        if (joystick != null) {
-            joystick.setInputListener(this);
-            joysticks = joystick.loadJoysticks(this);
-        }
-        if (touch != null) {
-            touch.setInputListener(this);
-        }
-
-        firstTime = keys.getInputTimeNanos();
+    public void addListener(InputListener listener, String... mappingNames) {
+        mapper.addListener(listener, mappingNames);;
+    }
+    
+    public void removeListener(InputListener listener) {
+	    mapper.removeListener(listener);
     }
 
 
+    public void addMapping(String mappingName, Trigger... triggers) {
+    	mapper.addMapping(mappingName, triggers);
+    }
 
+    /**
+     * Returns true if this InputManager has a mapping registered
+     * for the given mappingName.
+     *
+     * @param mappingName The mapping name to check.
+     *
+     * @see InputManager#addMapping(java.lang.String, com.jme3.input.controls.Trigger[])
+     * @see InputManager#deleteMapping(java.lang.String)
+     */
+    public boolean hasMapping(String mappingName) {
+        return mapper.hasMapping(mappingName);
+    }
 
-
+    public void deleteMapping(String mappingName) {
+    	mapper.deleteMapping(mappingName);
+    }
+    
+    public Vector2f getCursorPosition() {
+        return cm.getCursorPosition();
+    }
+    
+    public void setCursorVisible(boolean b)
+    {
+    	cm.setCursorVisible(true);
+    }
 
     /**
      * Do not use.

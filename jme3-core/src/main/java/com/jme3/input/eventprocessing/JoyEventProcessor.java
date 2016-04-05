@@ -1,10 +1,12 @@
-package com.jme3.input;
+package com.jme3.input.eventprocessing;
 
+import com.jme3.input.ActionInvoker;
 import com.jme3.input.controls.JoyAxisTrigger;
 import com.jme3.input.controls.JoyButtonTrigger;
 import com.jme3.input.event.InputEvent;
 import com.jme3.input.event.JoyAxisEvent;
 import com.jme3.input.event.JoyButtonEvent;
+import com.jme3.input.util.IReadInputSettings;
 import com.jme3.util.IntMap;
 
 public class JoyEventProcessor implements EventProcessor {

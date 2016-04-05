@@ -1,8 +1,9 @@
-package com.jme3.input;
+package com.jme3.input.queue;
 
 import java.util.ArrayList;
 
 import com.jme3.app.Application;
+import com.jme3.input.IBaseListenerEmitter;
 import com.jme3.input.event.InputEvent;
 import com.jme3.input.event.JoyAxisEvent;
 import com.jme3.input.event.JoyButtonEvent;
@@ -10,7 +11,8 @@ import com.jme3.input.event.KeyInputEvent;
 import com.jme3.input.event.MouseButtonEvent;
 import com.jme3.input.event.MouseMotionEvent;
 import com.jme3.input.event.TouchEvent;
-import com.jme3.input.IEventProcessorEmitter;
+import com.jme3.input.eventprocessing.IEventProcessorEmitter;
+import com.jme3.input.util.InputTimer;
 
 public class EventQueue implements IEventQueue, IQueueProcessor{
 	

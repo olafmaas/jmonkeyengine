@@ -1,5 +1,6 @@
-package com.jme3.input;
+package com.jme3.input.util;
 
+import com.jme3.input.Joystick;
 import com.jme3.input.controls.ActionListener;
 
 public class JoyStickSettings {

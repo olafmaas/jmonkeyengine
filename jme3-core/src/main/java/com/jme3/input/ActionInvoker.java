@@ -8,6 +8,8 @@ import com.jme3.input.controls.InputListener;
 import com.jme3.input.controls.TouchListener;
 import com.jme3.input.controls.TouchTrigger;
 import com.jme3.input.event.TouchEvent;
+import com.jme3.input.util.IReadInputSettings;
+import com.jme3.input.util.IReadTimer;
 import com.jme3.math.FastMath;
 import com.jme3.util.IntMap;
 import com.jme3.util.IntMap.Entry;

@@ -1,7 +1,7 @@
 package com.jme3.input.inputListener;
 
-import com.jme3.input.IEventQueue;
 import com.jme3.input.event.InputEvent;
+import com.jme3.input.queue.IEventQueue;
 
 public abstract class BaseInputListener {
 

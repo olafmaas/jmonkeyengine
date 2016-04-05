@@ -1,4 +1,4 @@
-package com.jme3.input;
+package com.jme3.input.eventprocessing;
 
 import java.util.List;
 
@@ -9,7 +9,6 @@ import com.jme3.input.event.KeyInputEvent;
 import com.jme3.input.event.MouseButtonEvent;
 import com.jme3.input.event.MouseMotionEvent;
 import com.jme3.input.event.TouchEvent;
-import com.jme3.input.EventProcessor;
 import com.jme3.util.SafeArrayList;
 
 public class EventProcessorHandler implements IEventProcessorEmitter, IEventProcessorRegistration {

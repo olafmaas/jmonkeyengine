@@ -1,5 +1,6 @@
-package com.jme3.input;
+package com.jme3.input.eventprocessing;
 
+import com.jme3.input.ActionInvoker;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.event.InputEvent;
 import com.jme3.input.event.KeyInputEvent;

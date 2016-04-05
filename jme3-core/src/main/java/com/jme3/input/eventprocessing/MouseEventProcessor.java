@@ -1,10 +1,13 @@
-package com.jme3.input;
+package com.jme3.input.eventprocessing;
 
+import com.jme3.input.ActionInvoker;
+import com.jme3.input.MouseInput;
 import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.input.event.InputEvent;
 import com.jme3.input.event.MouseButtonEvent;
 import com.jme3.input.event.MouseMotionEvent;
+import com.jme3.input.util.IReadInputSettings;
 
 public class MouseEventProcessor implements EventProcessor {
 

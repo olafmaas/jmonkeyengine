@@ -1,4 +1,4 @@
-package com.jme3.input;
+package com.jme3.input.queue;
 
 public interface IQueueProcessor {
 

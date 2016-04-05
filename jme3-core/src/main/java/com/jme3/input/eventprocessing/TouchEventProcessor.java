@@ -1,7 +1,8 @@
-package com.jme3.input;
+package com.jme3.input.eventprocessing;
 
 import java.util.ArrayList;
 
+import com.jme3.input.ActionInvoker;
 import com.jme3.input.InputManager.Mapping;
 import com.jme3.input.controls.InputListener;
 import com.jme3.input.controls.TouchListener;

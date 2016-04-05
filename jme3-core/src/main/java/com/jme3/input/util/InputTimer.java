@@ -1,4 +1,4 @@
-package com.jme3.input;
+package com.jme3.input.util;
 
 public class InputTimer implements IReadTimer {
 

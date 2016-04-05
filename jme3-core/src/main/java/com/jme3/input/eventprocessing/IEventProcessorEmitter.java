@@ -1,4 +1,4 @@
-package com.jme3.input;
+package com.jme3.input.eventprocessing;
 
 import java.util.List;
 

@@ -2,6 +2,10 @@ package com.jme3.input;
 
 import java.util.List;
 
+import com.jme3.input.queue.IQueueProcessor;
+import com.jme3.input.util.ISetInputSettings;
+import com.jme3.input.util.InputTimer;
+
 public class InputUpdater {
 	
     private InputTimer timer;

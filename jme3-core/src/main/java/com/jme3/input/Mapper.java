@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.jme3.input.InputManager.Mapping;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.InputListener;
@@ -14,7 +13,6 @@ import com.jme3.input.controls.Trigger;
 import com.jme3.input.event.InputEvent;
 import com.jme3.util.IntMap;
 import com.jme3.util.SafeArrayList;
-import com.jme3.input.Mapping;
 
 public class Mapper implements IMapper, IListenerManager, IReadBindings {
 
@@ -140,9 +138,6 @@ public class Mapper implements IMapper, IListenerManager, IReadBindings {
 	public void clearMappings() {
         mappings.clear();
         bindings.clear();
-        
-        //TODO: Reset Callback oid
-        reset();
     }
     
 

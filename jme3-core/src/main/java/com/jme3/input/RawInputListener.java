@@ -53,8 +53,33 @@ public interface RawInputListener {
      */
     public void endInput();
 
+    /**
+     * Invoked on joystick axis events.
+     *
+     * @param evt
+     */
+    public void onJoyAxisEvent(JoyAxisEvent evt);
 
+    /**
+     * Invoked on joystick button presses.
+     *
+     * @param evt
+     */
+    public void onJoyButtonEvent(JoyButtonEvent evt);
 
+    /**
+     * Invoked on mouse movement/motion events.
+     *
+     * @param evt
+     */
+    public void onMouseMotionEvent(MouseMotionEvent evt);
+
+    /**
+     * Invoked on mouse button events.
+     *
+     * @param evt
+     */
+    public void onMouseButtonEvent(MouseButtonEvent evt);
 
     /**
      * Invoked on keyboard key press or release events.
@@ -70,5 +95,7 @@ public interface RawInputListener {
      * @param evt
      */
     public void onTouchEvent(TouchEvent evt);
+
+
 
 }

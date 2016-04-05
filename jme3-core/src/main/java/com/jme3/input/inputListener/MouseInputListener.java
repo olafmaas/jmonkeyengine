@@ -1,10 +1,10 @@
 package com.jme3.input.inputListener;
 
 import com.jme3.input.ICursorPos;
-import com.jme3.input.IEventQueue;
 import com.jme3.input.event.InputEvent;
 import com.jme3.input.event.MouseButtonEvent;
 import com.jme3.input.event.MouseMotionEvent;
+import com.jme3.input.queue.IEventQueue;
 
 public class MouseInputListener extends BaseInputListener {
 
