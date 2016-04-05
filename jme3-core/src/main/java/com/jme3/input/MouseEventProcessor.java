@@ -9,12 +9,10 @@ import com.jme3.input.event.MouseMotionEvent;
 public class MouseEventProcessor implements EventProcessor {
 
 	private ActionInvoker invoker;
-	private IReadInputSettings settings;
 	
-	public MouseEventProcessor(ActionInvoker ai, IReadInputSettings irs)
+	public MouseEventProcessor(ActionInvoker actionInvoker)
 	{
-		invoker = ai;
-		settings = irs;
+		invoker = actionInvoker;
 	}
 	
 	@Override
@@ -38,17 +36,17 @@ public class MouseEventProcessor implements EventProcessor {
       if (evt.getDX() != 0) {
           float val = Math.abs(evt.getDX()) / 1024f;
           invoker.invokeAnalogsAndActions(MouseAxisTrigger.mouseAxisHash(MouseInput.AXIS_X, evt.getDX() < 0), 
-        		  val, settings.getGlobalAxisDeadZone(), false);
+        		  val, invoker.getSettings().getGlobalAxisDeadZone(), false);
       }
       if (evt.getDY() != 0) {
           float val = Math.abs(evt.getDY()) / 1024f;
           invoker.invokeAnalogsAndActions(MouseAxisTrigger.mouseAxisHash(MouseInput.AXIS_Y, evt.getDY() < 0), 
-        		  val, settings.getGlobalAxisDeadZone(), false);
+        		  val, invoker.getSettings().getGlobalAxisDeadZone(), false);
       }
       if (evt.getDeltaWheel() != 0) {
           float val = Math.abs(evt.getDeltaWheel()) / 100f;
           invoker.invokeAnalogsAndActions(MouseAxisTrigger.mouseAxisHash(MouseInput.AXIS_WHEEL, evt.getDeltaWheel() < 0), 
-        		  val, settings.getGlobalAxisDeadZone(), false);
+        		  val, invoker.getSettings().getGlobalAxisDeadZone(), false);
       }
     }
 	

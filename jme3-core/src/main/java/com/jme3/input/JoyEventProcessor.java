@@ -10,18 +10,12 @@ import com.jme3.util.IntMap;
 public class JoyEventProcessor implements EventProcessor {
 
     private final IntMap<Float> axisValues = new IntMap<Float>();
+	private ActionInvoker invoker;	
 	
-	private ActionInvoker invoker;
-	private IReadInputSettings settings;
-	
-	
-	
-	public JoyEventProcessor(ActionInvoker ai, IReadInputSettings irs)
+	public JoyEventProcessor(ActionInvoker actionInvoker)
 	{
-		invoker = ai;
-		settings = irs;
+		invoker = actionInvoker;
 	}
-    
     
 	@Override
 	public void processEvent(InputEvent event) {
@@ -38,7 +32,7 @@ public class JoyEventProcessor implements EventProcessor {
         int joyId = evt.getJoyIndex();
         int axis = evt.getAxisIndex();
         float value = evt.getValue();
-        float effectiveDeadZone = Math.max(settings.getGlobalAxisDeadZone(), evt.getAxis().getDeadZone()); 
+        float effectiveDeadZone = Math.max(invoker.getSettings().getGlobalAxisDeadZone(), evt.getAxis().getDeadZone()); 
         if (value < effectiveDeadZone && value > -effectiveDeadZone) {
             int hash1 = JoyAxisTrigger.joyAxisHash(joyId, axis, true);
             int hash2 = JoyAxisTrigger.joyAxisHash(joyId, axis, false);

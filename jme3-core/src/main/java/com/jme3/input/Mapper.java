@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.jme3.input.InputManager.Mapping;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.InputListener;
@@ -21,9 +20,6 @@ public class Mapper implements IMapper, IListenerManager, IReadBindings {
 	private static final Logger logger = Logger.getLogger(InputManager.class.getName());
 	private final HashMap<String, Mapping> mappings = new HashMap<String, Mapping>();
 	private final IntMap<ArrayList<Mapping>> bindings = new IntMap<ArrayList<Mapping>>();
-
-
-    
     
     /* (non-Javadoc)
 	 * @see com.jme3.input.IMapper#addMapping(java.lang.String, com.jme3.input.controls.Trigger)

@@ -20,11 +20,11 @@ public class ActionInvoker {
     private final IntMap<Long> pressedButtons = new IntMap<Long>();
     private IntMap<Float> axisValues = new IntMap<Float>();
 	
-	public ActionInvoker(IReadInputSettings irs, IReadBindings irb, IReadTimer irt)
+	public ActionInvoker(IReadInputSettings settings, IReadBindings bindings, IReadTimer timer)
 	{
-		settings = irs;
-		bindings = irb;
-		timer = irt;
+		this.settings = settings;
+		this.bindings = bindings;
+		this.timer = timer;
 	}
 	
 	//Onafhankelijk
@@ -71,9 +71,8 @@ public class ActionInvoker {
             }                        // the event then.
 
             long pressTime = pressTimeObj;
-            long lastUpdate = timer.getLastUpdateTime();
             long releaseTime = time;
-            long timeDelta = releaseTime - Math.max(pressTime, lastUpdate);
+            long timeDelta = releaseTime - Math.max(pressTime, timer.getLastUpdateTime());
 
             if (timeDelta > 0) {
                 invokeAnalogs(hash, computeAnalogValue(timeDelta), false);
@@ -85,8 +84,8 @@ public class ActionInvoker {
     public void invokeUpdateActions() {
         for (Entry<Long> pressedButton : pressedButtons) {
             int hash = pressedButton.getKey();
-
             long pressTime = pressedButton.getValue();
+            
             long timeDelta = timer.getLastUpdateTime() - Math.max(timer.getLastLastUpdateTime(), pressTime);
 
             if (timeDelta > 0) {
@@ -147,11 +146,9 @@ public class ActionInvoker {
             }
         }
     }
-
+    
     public void invokeAnalogsAndActions(int hash, float value, 
-    		float effectiveDeadZone, boolean applyTpf, IntMap<Float> newerAxisValues) {
-    	
-    	axisValues = newerAxisValues;
+    		float effectiveDeadZone, boolean applyTpf) {
     	
     	if (value < effectiveDeadZone) {
             invokeAnalogs(hash, value, !applyTpf);
@@ -188,4 +185,15 @@ public class ActionInvoker {
             }
         }
     }
+
+    public void invokeAnalogsAndActions(int hash, float value, 
+    		float effectiveDeadZone, boolean applyTpf, IntMap<Float> newerAxisValues) {
+    	
+    	axisValues = newerAxisValues;    	
+    	invokeAnalogsAndActions(hash, value, effectiveDeadZone, applyTpf);
+    }
+
+	public IReadInputSettings getSettings() {
+		return settings;
+	}
 }

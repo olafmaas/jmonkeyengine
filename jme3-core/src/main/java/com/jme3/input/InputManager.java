@@ -40,6 +40,7 @@ import com.jme3.math.Vector2f;
 import com.jme3.util.IntMap;
 import com.jme3.util.IntMap.Entry;
 import com.jme3.util.SafeArrayList;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -84,85 +85,67 @@ import java.util.logging.Logger;
  */
 public class InputManager implements RawInputListener {
 
-    private static final Logger logger = Logger.getLogger(InputManager.class.getName());
-    private final KeyInput keys;
-    
-    private final JoyInput joystick;
-    private final TouchInput touch;
-    private float frameTPF;
-    private long lastLastUpdateTime = 0;
-    private long lastUpdateTime = 0;
-    private long frameDelta = 0;
-    private long firstTime = 0;
-    private boolean eventsPermitted = false;
-    
-    private boolean safeMode = false;
-    private float globalAxisDeadZone = 0.05f;
-    
-    private Joystick[] joysticks;
-
-    private final IntMap<Long> pressedButtons = new IntMap<Long>();
-    private final IntMap<Float> axisValues = new IntMap<Float>();
-    private final ArrayList<InputEvent> inputQueue = new ArrayList<InputEvent>();
-
-    private static class Mapping {
-
-        private final String name;
-        private final ArrayList<Integer> triggers = new ArrayList<Integer>();
-        private final ArrayList<InputListener> listeners = new ArrayList<InputListener>();
-
-        public Mapping(String name) {
-            this.name = name;
-        }
-    }
+    private EventQueue inputQueue;    
 
     /**
      * Initializes the InputManager.
      *
      * <p>This should only be called internally in {@link Application}.
      *
-     * @param mouse
-     * @param keys
-     * @param joystick
-     * @param touch
      * @throws IllegalArgumentException If either mouseInput or keyInput are null.
      */
     public InputManager(MouseInput mouse, KeyInput keys, JoyInput joystick, TouchInput touch) {
         if (keys == null || mouse == null) {
             throw new IllegalArgumentException("Mouse or keyboard cannot be null");
         }
-
-        this.keys = keys;
-        this.mouse = mouse;
-        this.joystick = joystick;
-        this.touch = touch;
-
-        keys.setInputListener(this);
-        mouse.setInputListener(this);
-        if (joystick != null) {
-            joystick.setInputListener(this);
-            joysticks = joystick.loadJoysticks(this);
+        
+        EventProcessorHandler processor = new EventProcessorHandler();
+        BaseListenerHandler listener = new BaseListenerHandler();
+        
+        InputSettings settings = new InputSettings();
+        Mapper mapping = new Mapper();
+        InputTimer timer = new InputTimer();        
+        
+        ActionInvoker invoker = new ActionInvoker(settings, mapping, timer);
+        
+        if(mouse != null){
+        	processor.add(new MouseEventProcessor(invoker));
         }
-        if (touch != null) {
-            touch.setInputListener(this);
+        if(keys != null){
+        	processor.add(new KeyEventProcessor(invoker));
         }
-
-        firstTime = keys.getInputTimeNanos();
+        if(joystick != null){
+        	processor.add(new JoyEventProcessor(invoker));
+        }
+        if(touch != null){
+        	processor.add(new TouchEventProcessor(invoker));
+        }      
+        
+        inputQueue = new EventQueue(listener, processor);
     }
-
-
-
-
-
 
     /**
      * Do not use.
      * Called to reset pressed keys or buttons when focus is restored.
      */
     public void reset() {
-        pressedButtons.clear();
-        axisValues.clear();
     }
+
+	@Override
+	public void beginInput() {
+	}
+	
+	@Override
+	public void endInput() {
+	}
+
+	@Override
+	public void onKeyEvent(KeyInputEvent evt) {
+	}
+
+	@Override
+	public void onTouchEvent(TouchEvent evt) {
+	}
 
 
 
