@@ -5,9 +5,12 @@ import com.jme3.input.controls.JoyButtonTrigger;
 import com.jme3.input.event.InputEvent;
 import com.jme3.input.event.JoyAxisEvent;
 import com.jme3.input.event.JoyButtonEvent;
+import com.jme3.util.IntMap;
 
 public class JoyEventProcessor implements EventProcessor {
 
+    private final IntMap<Float> axisValues = new IntMap<Float>();
+	
 	@Override
 	public void processEvent(InputEvent event) {
 		// TODO Auto-generated method stub
@@ -22,7 +25,7 @@ public class JoyEventProcessor implements EventProcessor {
 //	        for (int i = 0; i < rawListeners.size(); i++){
 //	            rawListeners.get(i).onJoyAxisEvent(evt);
 //	        }
-
+	   
         int joyId = evt.getJoyIndex();
         int axis = evt.getAxisIndex();
         float value = evt.getValue();

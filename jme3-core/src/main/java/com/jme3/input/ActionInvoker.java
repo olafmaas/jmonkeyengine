@@ -2,7 +2,6 @@ package com.jme3.input;
 
 import java.util.ArrayList;
 
-import com.jme3.input.InputManager.Mapping;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.InputListener;
