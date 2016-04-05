@@ -188,6 +188,7 @@ public class ActionInvoker {
         }
     }
 
+    //Joystick
     public void invokeAnalogsAndActions(int hash, float value, 
     		float effectiveDeadZone, boolean applyTpf, IntMap<Float> newerAxisValues) {
     	
@@ -197,5 +198,15 @@ public class ActionInvoker {
 
 	public IReadInputSettings getSettings() {
 		return settings;
-	}
+	}	
+	
+	/**
+     * Do not use.
+     * Called to reset pressed keys or buttons when focus is restored.
+     */
+    public void reset() {
+        pressedButtons.clear();
+        axisValues.clear();
+    }
+	
 }

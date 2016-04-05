@@ -32,7 +32,6 @@ public class InputUpdater {
      */
     public void update(float tpf) {
         settings.setFrameTPF(tpf);
-
         
         // Activate safemode if the TPF value is so small
         // that rounding errors are inevitable
@@ -40,7 +39,7 @@ public class InputUpdater {
 
         long currentTime = java.lang.System.currentTimeMillis();
         timer.setFrameDelta(currentTime - timer.getLastUpdateTime());
-
+        
         for(Input inp : inputDevices)
         {
         	inp.update();

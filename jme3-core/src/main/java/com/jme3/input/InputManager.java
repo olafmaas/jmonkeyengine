@@ -35,6 +35,15 @@ import com.jme3.app.Application;
 import com.jme3.cursors.plugins.JmeCursor;
 import com.jme3.input.controls.*;
 import com.jme3.input.event.*;
+import com.jme3.input.eventprocessing.EventProcessorHandler;
+import com.jme3.input.eventprocessing.JoyEventProcessor;
+import com.jme3.input.eventprocessing.KeyEventProcessor;
+import com.jme3.input.eventprocessing.MouseEventProcessor;
+import com.jme3.input.eventprocessing.TouchEventProcessor;
+import com.jme3.input.inputListener.*;
+import com.jme3.input.queue.EventQueue;
+import com.jme3.input.util.InputSettings;
+import com.jme3.input.util.InputTimer;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector2f;
 import com.jme3.util.IntMap;
@@ -43,6 +52,7 @@ import com.jme3.util.SafeArrayList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -85,8 +95,17 @@ import java.util.logging.Logger;
  */
 public class InputManager implements RawInputListener {
 
-	Mapper mapper;
-	CursorManager cm;
+	CursorManager cursorManager;
+
+	InputUpdater updater;
+    EventQueue inputQueue;
+	EventProcessorHandler processor;
+    BaseListenerHandler listener;  
+    
+    InputSettings settings;
+    Mapper mapper;
+    InputTimer timer;       
+    ActionInvoker invoker;
 
     /**
      * Initializes the InputManager.
@@ -101,7 +120,7 @@ public class InputManager implements RawInputListener {
      */
     public InputManager(Mapper m, CursorManager cm) {
     	this.mapper = m;
-    	this.cm = cm;
+    	this.cursorManager = cm;
     }
     
     /**
@@ -111,37 +130,47 @@ public class InputManager implements RawInputListener {
      * <p>This should only be called internally in {@link Application}.
      *
      * @throws IllegalArgumentException If either mouseInput or keyInput are null.
-     
+     **/
     public InputManager(MouseInput mouse, KeyInput keys, JoyInput joystick, TouchInput touch) {
         if (keys == null || mouse == null) {
             throw new IllegalArgumentException("Mouse or keyboard cannot be null");
         }
         
-        EventProcessorHandler processor = new EventProcessorHandler();
-        BaseListenerHandler listener = new BaseListenerHandler();
+        processor = new EventProcessorHandler();
+        listener = new BaseListenerHandler();
+        List<Input> inputDevices = new ArrayList<Input>();
         
-        InputSettings settings = new InputSettings();
-        Mapper mapping = new Mapper();
-        InputTimer timer = new InputTimer();        
+        settings = new InputSettings();
+        mapper = new Mapper();
+        timer = new InputTimer();        
         
-        ActionInvoker invoker = new ActionInvoker(settings, mapping, timer);
+        invoker = new ActionInvoker(settings, mapper, timer);
+    	cursorManager = new CursorManager(mouse,touch);
+        inputQueue = new EventQueue(listener, processor);
         
         if(mouse != null){
-        	processor.add(new MouseEventProcessor(invoker));
+//        	processor.add(new MouseEventProcessor(invoker));
+        	mouse.setInputListener(new MouseInputListener(inputQueue, cursorManager));
+        	inputDevices.add(mouse);
         }
         if(keys != null){
-        	processor.add(new KeyEventProcessor(invoker));
+//        	processor.add(new KeyEventProcessor(invoker));
+        	keys.setInputListener(new KeyInputListener(inputQueue));
+        	inputDevices.add(keys);
         }
         if(joystick != null){
-        	processor.add(new JoyEventProcessor(invoker));
+//        	processor.add(new JoyEventProcessor(invoker));
+        	joystick.setInputListener(new JoyInputListener(inputQueue));
+        	inputDevices.add(joystick);
         }
         if(touch != null){
-        	processor.add(new TouchEventProcessor(invoker));
+//        	processor.add(new TouchEventProcessor(invoker));
+        	touch.setInputListener(new TouchInputListener(inputQueue, cursorManager));
+        	inputDevices.add(touch);
         }      
         
-        inputQueue = new EventQueue(listener, processor);
+        updater = new InputUpdater(timer, invoker, inputQueue, inputDevices, settings);
     }
-    **/
 
     public void addListener(InputListener listener, String... mappingNames) {
         mapper.addListener(listener, mappingNames);;
@@ -173,64 +202,187 @@ public class InputManager implements RawInputListener {
     	mapper.deleteMapping(mappingName);
     }
     
-    public Vector2f getCursorPosition() {
-        return cm.getCursorPosition();
-    }
-    
-    public void setCursorVisible(boolean b)
-    {
-    	cm.setCursorVisible(true);
+
+    /**
+     * Deletes a specific trigger registered to a mapping.
+     *
+     * <p>
+     * The given mapping will no longer receive events raised by the
+     * trigger.
+     *
+     * @param mappingName The mapping name to cease receiving events from the
+     * trigger.
+     * @param trigger The trigger to no longer invoke events on the mapping.
+     */
+    public void deleteTrigger(String mappingName, Trigger trigger) {
+        mapper.deleteTrigger(mappingName, trigger);
     }
 
+    /**
+     * Clears all the input mappings from this InputManager.
+     * Consequently, also clears all of the
+     * InputListeners as well.
+     */
+    public void clearMappings() {
+        mapper.clearMappings();
+    }
+    /**
+     * Set the deadzone for joystick axes.
+     *
+     * <p>{@link ActionListener#onAction(java.lang.String, boolean, float) }
+     * events will only be raised if the joystick axis value is greater than
+     * the <code>deadZone</code>.
+     *
+     * @param deadZone the deadzone for joystick axes.
+     */
+    public void setAxisDeadZone(float deadZone) {
+        settings.setGlobalAxisDeadZone(deadZone);
+    }
+
+    /**
+     * Returns the deadzone for joystick axes.
+     *
+     * @return the deadzone for joystick axes.
+     */
+    public float getAxisDeadZone() {
+        return settings.getGlobalAxisDeadZone();
+    }
+    
+    /**
+     * Do not use.
+     * Called to reset pressed keys or buttons when focus is restored.
+     */
+    public void reset() {
+    	invoker.reset();
+    }
+    
+    public void setMouseCursor(JmeCursor jmeCursor) {
+		cursorManager.setMouseCursor(jmeCursor);
+	}
+    
+    /**
+     * Returns whether the mouse cursor is visible or not.
+     *
+     * <p>By default the cursor is visible.
+     *
+     * @return whether the mouse cursor is visible or not.
+     *
+     * @see InputManager#setCursorVisible(boolean)
+     */
+    public boolean isCursorVisible() {
+        return cursorManager.isCursorVisible();
+    }
+
+    /**
+     * Set whether the mouse cursor should be visible or not.
+     *
+     * @param visible whether the mouse cursor should be visible or not.
+     */
+    public void setCursorVisible(boolean visible) {
+       cursorManager.setCursorVisible(visible);
+    }
+
+    /**
+     * Returns the current cursor position. The position is relative to the
+     * bottom-left of the screen and is in pixels.
+     *
+     * @return the current cursor position
+     */
+    public Vector2f getCursorPosition() {
+        return cursorManager.getCursorPosition();
+    }
+    
+    /**
+     * Returns an array of all joysticks installed on the system.
+     *
+     * @return an array of all joysticks installed on the system.
+     */
+    public Joystick[] getJoysticks() {
+        return null;
+    }
+
+    /**
+     * Enable simulation of mouse events. Used for touchscreen input only.
+     *
+     * @param value True to enable simulation of mouse events
+     */
+    public void setSimulateMouse(boolean value) {
+        cursorManager.setSimulateMouse(value);
+    }
+    /**
+     * @deprecated Use isSimulateMouse
+     * Returns state of simulation of mouse events. Used for touchscreen input only.
+     *
+     */
+    public boolean getSimulateMouse() {
+        return cursorManager.isSimulateMouse();
+    }
+
+    /**
+     * Returns state of simulation of mouse events. Used for touchscreen input only.
+     *
+     */
+    public boolean isSimulateMouse() {
+        return cursorManager.isSimulateMouse();
+    }
+
+    /**
+     * Enable simulation of keyboard events. Used for touchscreen input only.
+     *
+     * @param value True to enable simulation of keyboard events
+     */
+    public void setSimulateKeyboard(boolean value) {
+        cursorManager.setSimulateKeyboard(value);
+    }
+
+    /**
+     * Returns state of simulation of key events. Used for touchscreen input only.
+     *
+     */
+    public boolean isSimulateKeyboard() {
+        return cursorManager.isSimulateKeyboard();
+    }
+    
+    /**
+     * Updates the <code>InputManager</code>.
+     * This will query current input devices and send
+     * appropriate events to registered listeners.
+     *
+     * @param tpf Time per frame value.
+     */
+    public void update(float tpf) {
+        updater.update(tpf);
+    }
+    
 	@Override
 	public void beginInput() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void endInput() {
-		// TODO Auto-generated method stub
-		
 	}
 
-	@Override
 	public void onJoyAxisEvent(JoyAxisEvent evt) {
-		// TODO Auto-generated method stub
-		
+        throw new UnsupportedOperationException("JoyInput has raised an event at an illegal time.");
 	}
 
-	@Override
 	public void onJoyButtonEvent(JoyButtonEvent evt) {
-		// TODO Auto-generated method stub
-		
+        throw new UnsupportedOperationException("JoyInput has raised an event at an illegal time.");
 	}
 
-	@Override
 	public void onMouseMotionEvent(MouseMotionEvent evt) {
-		// TODO Auto-generated method stub
-		
+        throw new UnsupportedOperationException("MouseInput has raised an event at an illegal time.");
 	}
 
-	@Override
 	public void onMouseButtonEvent(MouseButtonEvent evt) {
-		// TODO Auto-generated method stub
-		
+        throw new UnsupportedOperationException("MouseInput has raised an event at an illegal time.");
 	}
 
-	@Override
 	public void onKeyEvent(KeyInputEvent evt) {
-		// TODO Auto-generated method stub
-		
+        throw new UnsupportedOperationException("KeyInput has raised an event at an illegal time.");		
 	}
 
-	@Override
 	public void onTouchEvent(TouchEvent evt) {
-		// TODO Auto-generated method stub
-		
+        throw new UnsupportedOperationException("TouchInput has raised an event at an illegal time.");
 	}
-
-
-
-
 }

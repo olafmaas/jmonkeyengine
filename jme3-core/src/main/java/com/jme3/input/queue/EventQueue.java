@@ -12,7 +12,8 @@ public class EventQueue implements IEventQueue, IQueueProcessor{
     private final ArrayList<InputEvent> inputQueue = new ArrayList<InputEvent>();
     private IBaseListenerEmitter baselisteners;
     private IEventProcessorEmitter eventprocessors;
-    
+	public boolean eventsPermitted = false;
+	
     /**
      * Initializes the InputManager.
      *
@@ -25,7 +26,7 @@ public class EventQueue implements IEventQueue, IQueueProcessor{
         eventprocessors = eventProcessor;
     }
     
-    /* (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see com.jme3.input.IQueueProcessor#processQueue()
 	 */
     @Override
@@ -42,5 +43,12 @@ public class EventQueue implements IEventQueue, IQueueProcessor{
 	public void add(InputEvent event) {
 		 inputQueue.add(event);
 	}
+	
+    public IBaseListenerEmitter getBaselisteners() {
+		return baselisteners;
+	}
 
+	public IEventProcessorEmitter getEventprocessors() {
+		return eventprocessors;
+	}
 }

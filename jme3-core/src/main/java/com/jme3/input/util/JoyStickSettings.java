@@ -5,7 +5,10 @@ import com.jme3.input.controls.ActionListener;
 
 public class JoyStickSettings {
 	
-    /**
+    private float globalAxisDeadZone;
+	private Joystick[] joysticks;
+
+	/**
      * Set the deadzone for joystick axes.
      *
      * <p>{@link ActionListener#onAction(java.lang.String, boolean, float) }

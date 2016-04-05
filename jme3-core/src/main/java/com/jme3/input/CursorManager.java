@@ -5,7 +5,6 @@ import com.jme3.math.Vector2f;
 
 public class CursorManager implements ICursorPos{
 
-	
 	private final Vector2f cursorPos = new Vector2f();
 	private boolean mouseVisible = true;
 	private final MouseInput mouse;
@@ -98,6 +97,29 @@ public class CursorManager implements ICursorPos{
     public boolean isSimulateMouse() {
         if (touch != null) {
             return touch.isSimulateMouse();
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Enable simulation of keyboard events. Used for touchscreen input only.
+     *
+     * @param value True to enable simulation of keyboard events
+     */
+    public void setSimulateKeyboard(boolean value) {
+        if (touch != null) {
+        	touch.setSimulateKeyboard(value);
+        }
+    }
+
+    /**
+     * Returns state of simulation of key events. Used for touchscreen input only.
+     *
+     */
+    public boolean isSimulateKeyboard() {
+        if (touch != null) {
+            return touch.isSimulateKeyboard();
         } else {
             return false;
         }

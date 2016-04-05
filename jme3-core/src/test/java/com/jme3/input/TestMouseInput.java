@@ -89,6 +89,7 @@ public class TestMouseInput implements MouseInput {
         
         for (MouseButtonEvent evt : eventQueue) {
             listener.onMouseButtonEvent(evt);
+            
 		}
         for (MouseMotionEvent evt : motionQueue) {
             listener.onMouseMotionEvent(evt);
