@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
@@ -113,6 +114,45 @@ public class InputManager implements RawInputListener {
     	this.mapper = m;
     	this.cm = cm;
     }
+    
+    /**
+    
+     * Initializes the InputManager.
+     *
+     * <p>This should only be called internally in {@link Application}.
+     *
+     * @throws IllegalArgumentException If either mouseInput or keyInput are null.
+     
+    public InputManager(MouseInput mouse, KeyInput keys, JoyInput joystick, TouchInput touch) {
+        if (keys == null || mouse == null) {
+            throw new IllegalArgumentException("Mouse or keyboard cannot be null");
+        }
+        
+        EventProcessorHandler processor = new EventProcessorHandler();
+        BaseListenerHandler listener = new BaseListenerHandler();
+        
+        InputSettings settings = new InputSettings();
+        Mapper mapping = new Mapper();
+        InputTimer timer = new InputTimer();        
+        
+        ActionInvoker invoker = new ActionInvoker(settings, mapping, timer);
+        
+        if(mouse != null){
+        	processor.add(new MouseEventProcessor(invoker));
+        }
+        if(keys != null){
+        	processor.add(new KeyEventProcessor(invoker));
+        }
+        if(joystick != null){
+        	processor.add(new JoyEventProcessor(invoker));
+        }
+        if(touch != null){
+        	processor.add(new TouchEventProcessor(invoker));
+        }      
+        
+        inputQueue = new EventQueue(listener, processor);
+    }
+    **/
 
     public void addListener(InputListener listener, String... mappingNames) {
         mapper.addListener(listener, mappingNames);;
@@ -153,14 +193,6 @@ public class InputManager implements RawInputListener {
     	cm.setCursorVisible(true);
     }
 
-    /**
-     * Do not use.
-     * Called to reset pressed keys or buttons when focus is restored.
-     */
-    public void reset() {
-        pressedButtons.clear();
-        axisValues.clear();
-    }
 
 
 

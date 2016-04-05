@@ -9,9 +9,9 @@ public class KeyEventProcessor implements EventProcessor {
 
 	private ActionInvoker invoker;
 	
-	public KeyEventProcessor(ActionInvoker ai)
+	public KeyEventProcessor(ActionInvoker actionInvoker)
 	{
-		invoker = ai;
+		invoker = actionInvoker;
 	}
 	
 	@Override

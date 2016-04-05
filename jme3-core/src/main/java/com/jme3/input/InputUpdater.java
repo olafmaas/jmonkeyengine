@@ -9,18 +9,18 @@ import com.jme3.input.util.InputTimer;
 public class InputUpdater {
 	
     private InputTimer timer;
-    private ActionInvoker ai;
-    private IQueueProcessor proc;
+    private ActionInvoker invoker;
+    private IQueueProcessor processor;
     private List<Input> inputDevices;
     private ISetInputSettings settings;
 	
     //inpDevices should be initialized
-    public InputUpdater(InputTimer ipt, ActionInvoker ai, IQueueProcessor iq, List<Input> inputDevices, ISetInputSettings isi) {
-    	timer = ipt;
-    	this.ai = ai;
-    	proc = iq;
+    public InputUpdater(InputTimer inputTimer, ActionInvoker actionInvoker, IQueueProcessor queueProcessor, List<Input> inputDevices, ISetInputSettings inputSettings) {
+    	timer = inputTimer;
+    	invoker = actionInvoker;
+    	processor = queueProcessor;
     	this.inputDevices = inputDevices;
-    	settings = isi;
+    	settings = inputSettings;
     }
 	
     /**
@@ -44,11 +44,10 @@ public class InputUpdater {
         for(Input inp : inputDevices)
         {
         	inp.update();
-        }
-        
+        }        
 
-        proc.processQueue();
-        ai.invokeUpdateActions();
+        processor.processQueue();
+        invoker.invokeUpdateActions();
 
         timer.setLastLastUpdateTime(timer.getLastUpdateTime());
         timer.setLastUpdateTime(currentTime);

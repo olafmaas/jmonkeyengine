@@ -14,9 +14,9 @@ public class TouchEventProcessor implements EventProcessor {
 
 	private ActionInvoker invoker;
 	
-	public TouchEventProcessor(ActionInvoker ai)
+	public TouchEventProcessor(ActionInvoker actionInvoker)
 	{
-		invoker = ai;
+		invoker = actionInvoker;
 	}
 	
 	@Override
