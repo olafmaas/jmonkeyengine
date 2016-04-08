@@ -3,10 +3,13 @@ package com.jme3.input;
 public class JoystickManager implements IJoyStickSettings{
 
 	private float deadZone = 0.05F;
+	private InputManager inputManager;
     private JoyInput joystick;
+    
 	
-	public JoystickManager(JoyInput joystick)
+	public JoystickManager(InputManager inputManager, JoyInput joystick)
 	{
+		this.inputManager = inputManager;
 		this.joystick = joystick;
 	}
 
@@ -22,6 +25,8 @@ public class JoystickManager implements IJoyStickSettings{
 
 	@Override
 	public Joystick[] getJoysticks() {
-		return joystick.loadJoysticks(null);
+		if(joystick == null)
+			return null;
+		return joystick.loadJoysticks(inputManager);
 	}
 }

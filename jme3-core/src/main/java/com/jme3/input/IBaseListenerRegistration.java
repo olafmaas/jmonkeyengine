@@ -25,7 +25,7 @@ public interface IBaseListenerRegistration {
 	 *
 	 * @see RawInputListener
 	 */
-	void addRawInputListener(BaseInputListener listener);
+	void addRawInputListener(RawInputListener listener);
 
 	/**
 	 * Removes a {@link RawInputListener} so that it no longer
