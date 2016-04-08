@@ -137,6 +137,7 @@ public class InputManager implements RawInputListener {
         }
         
         processor = new EventProcessorHandler();
+        
         listener = new BaseListenerHandler();
         List<Input> inputDevices = new ArrayList<Input>();
         
@@ -145,26 +146,27 @@ public class InputManager implements RawInputListener {
         timer = new InputTimer();        
         
         invoker = new ActionInvoker(settings, mapper, timer);
+        
     	cursorManager = new CursorManager(mouse,touch);
         inputQueue = new EventQueue(listener, processor);
         
         if(mouse != null){
-//        	processor.add(new MouseEventProcessor(invoker));
+        	processor.add(new MouseEventProcessor(invoker));
         	mouse.setInputListener(new MouseInputListener(inputQueue, cursorManager));
         	inputDevices.add(mouse);
         }
         if(keys != null){
-//        	processor.add(new KeyEventProcessor(invoker));
+        	processor.add(new KeyEventProcessor(invoker));
         	keys.setInputListener(new KeyInputListener(inputQueue));
         	inputDevices.add(keys);
         }
         if(joystick != null){
-//        	processor.add(new JoyEventProcessor(invoker));
+        	processor.add(new JoyEventProcessor(invoker));
         	joystick.setInputListener(new JoyInputListener(inputQueue));
         	inputDevices.add(joystick);
         }
         if(touch != null){
-//        	processor.add(new TouchEventProcessor(invoker));
+        	processor.add(new TouchEventProcessor(invoker));
         	touch.setInputListener(new TouchInputListener(inputQueue, cursorManager));
         	inputDevices.add(touch);
         }      
