@@ -96,6 +96,7 @@ import java.util.logging.Logger;
 public class InputManager implements RawInputListener {
 
 	CursorManager cursorManager;
+	JoystickManager joystickManager;
 
 	InputUpdater updater;
     EventQueue inputQueue;
@@ -146,6 +147,8 @@ public class InputManager implements RawInputListener {
         
         invoker = new ActionInvoker(settings, mapper, timer);
     	cursorManager = new CursorManager(mouse,touch);
+    	joystickManager = new JoystickManager(joystick);
+    	
         inputQueue = new EventQueue(listener, processor);
         
         if(mouse != null){
@@ -298,7 +301,7 @@ public class InputManager implements RawInputListener {
      * @return an array of all joysticks installed on the system.
      */
     public Joystick[] getJoysticks() {
-        return null;
+        return joystickManager.getJoysticks();
     }
 
     /**
