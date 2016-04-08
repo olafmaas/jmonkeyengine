@@ -2,7 +2,7 @@ package com.jme3.input;
 
 import java.util.List;
 
-import com.jme3.input.queue.IQueueProcessor;
+import com.jme3.input.queue.IEventQueue;
 import com.jme3.input.util.ISetInputSettings;
 import com.jme3.input.util.InputTimer;
 
@@ -10,12 +10,12 @@ public class InputUpdater {
 	
     private InputTimer timer;
     private ActionInvoker invoker;
-    private IQueueProcessor processor;
+    private IEventQueue processor;
     private List<Input> inputDevices;
     private ISetInputSettings settings;
 	
     //inpDevices should be initialized
-    public InputUpdater(InputTimer inputTimer, ActionInvoker actionInvoker, IQueueProcessor queueProcessor, List<Input> inputDevices, ISetInputSettings inputSettings) {
+    public InputUpdater(InputTimer inputTimer, ActionInvoker actionInvoker, IEventQueue queueProcessor, List<Input> inputDevices, ISetInputSettings inputSettings) {
     	timer = inputTimer;
     	invoker = actionInvoker;
     	processor = queueProcessor;

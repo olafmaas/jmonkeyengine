@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import com.jme3.app.Application;
 import com.jme3.input.IBaseListenerEmitter;
 import com.jme3.input.event.InputEvent;
-import com.jme3.input.eventprocessing.IEventProcessorEmitter;
+import com.jme3.input.eventprocessing.IEventProcessor;
 
-public class EventQueue implements IEventQueue, IQueueProcessor{
+public class EventQueue implements IEventQueue{
 	
     private final ArrayList<InputEvent> inputQueue = new ArrayList<InputEvent>();
     private IBaseListenerEmitter baselisteners;
-    private IEventProcessorEmitter eventprocessors;
+    private IEventProcessor eventprocessors;
 	public boolean eventsPermitted = false;
 	
     /**
@@ -21,7 +21,7 @@ public class EventQueue implements IEventQueue, IQueueProcessor{
      *
      * @throws IllegalArgumentException If either mouseInput or keyInput are null.
      */
-    public EventQueue( IBaseListenerEmitter listener, IEventProcessorEmitter eventProcessor ) {
+    public EventQueue( IBaseListenerEmitter listener, IEventProcessor eventProcessor ) {
         baselisteners = listener;
         eventprocessors = eventProcessor;
     }
@@ -48,7 +48,7 @@ public class EventQueue implements IEventQueue, IQueueProcessor{
 		return baselisteners;
 	}
 
-	public IEventProcessorEmitter getEventprocessors() {
+	public IEventProcessor getEventprocessors() {
 		return eventprocessors;
 	}
 }

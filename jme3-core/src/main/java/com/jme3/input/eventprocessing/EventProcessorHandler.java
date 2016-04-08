@@ -11,7 +11,7 @@ import com.jme3.input.event.MouseMotionEvent;
 import com.jme3.input.event.TouchEvent;
 import com.jme3.util.SafeArrayList;
 
-public class EventProcessorHandler implements IEventProcessorEmitter, IEventProcessorRegistration {
+public class EventProcessorHandler implements IEventProcessor{
 	
     private final SafeArrayList<EventProcessor> eventProcessors = new SafeArrayList<EventProcessor>(EventProcessor.class);
 

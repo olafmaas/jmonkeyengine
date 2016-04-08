@@ -6,4 +6,5 @@ public interface IEventQueue {
 	
 	public void add(InputEvent event);
 
+	public void processQueue();
 }
