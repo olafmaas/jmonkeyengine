@@ -6,7 +6,7 @@ import com.jme3.input.queue.IEventQueue;
 import com.jme3.input.util.ISetInputSettings;
 import com.jme3.input.util.InputTimer;
 
-public class InputUpdater {
+public class InputUpdater implements IInputUpdater {
 	
     private InputTimer timer;
     private ActionInvoker invoker;

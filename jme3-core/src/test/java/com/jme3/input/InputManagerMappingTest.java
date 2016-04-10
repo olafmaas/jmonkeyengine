@@ -81,24 +81,6 @@ public class InputManagerMappingTest {
     }
     
     @Test
-    public void testInitJoystick()
-    {
-    	JoyInputHelper joyInputHelper = new JoyInputHelper();
-    	inputManager = new InputManager(new DummyMouseInput(), new DummyKeyInput(),
-    										joyInputHelper, null);
-    	assertEquals(inputManager, joyInputHelper.getRawInputListener());
-    }
-    
-    @Test
-    public void testInitTouch()
-    {
-    	TouchInputHelper touchInputHelper = new TouchInputHelper();
-    	inputManager = new InputManager(new DummyMouseInput(), new DummyKeyInput(),
-    										null, touchInputHelper);
-    	assertEquals(inputManager, touchInputHelper.getRawInputListener());
-    }
-    
-    @Test
     public void testAddNewMapping()
     {
     	inputManager.addMapping("testMapping", new KeyTrigger(0));
