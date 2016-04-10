@@ -16,7 +16,7 @@ public class EventProcessorHandler implements IEventProcessor{
     private final SafeArrayList<EventProcessor> eventProcessors = new SafeArrayList<EventProcessor>(EventProcessor.class);
 
     /* (non-Javadoc)
-	 * @see com.jme3.input.IEventProcessorRegistration#add(com.jme3.input.EventProcessor)
+	 * @see com.jme3.input.IEventProcessor#add(com.jme3.input.EventProcessor)
 	 */
     @Override
 	public void add(EventProcessor evp)
@@ -25,7 +25,7 @@ public class EventProcessorHandler implements IEventProcessor{
     }
     
     /* (non-Javadoc)
-	 * @see com.jme3.input.IEventProcessorRegistration#remove(com.jme3.input.EventProcessor)
+	 * @see com.jme3.input.IEventProcessor#remove(com.jme3.input.EventProcessor)
 	 */
     @Override
 	public void remove(EventProcessor evp)
@@ -34,7 +34,7 @@ public class EventProcessorHandler implements IEventProcessor{
     }
 
 	/* (non-Javadoc)
-	 * @see com.jme3.input.IEvenProcessorEmitter#emit(java.util.List)
+	 * @see com.jme3.input.IEvenProcessor#emit(java.util.List)
 	 */
 	@Override
 	public void emit(List<InputEvent> inputQueue)

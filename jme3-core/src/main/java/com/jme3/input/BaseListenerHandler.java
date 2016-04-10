@@ -8,9 +8,11 @@ import com.jme3.input.inputListener.BaseInputListener;
 
 public class BaseListenerHandler implements IBaseListenerRegistration, IBaseListenerEmitter {
 	
-	//contains rawinputlistener for not breaking code
+	
 	private final SafeArrayList<BaseInputListener> baseInputListeners = new SafeArrayList<BaseInputListener>(BaseInputListener.class);
-    private final SafeArrayList<RawInputListener> rawInputListeners = new SafeArrayList<RawInputListener>(RawInputListener.class);
+    
+	//contains rawinputlistener for not breaking code
+	private final SafeArrayList<RawInputListener> rawInputListeners = new SafeArrayList<RawInputListener>(RawInputListener.class);
 
     /* (non-Javadoc)
 	 * @see com.jme3.input.IBaseListenerHandler#addRawInputListener(com.jme3.input.inputListener.BaseInputListener)

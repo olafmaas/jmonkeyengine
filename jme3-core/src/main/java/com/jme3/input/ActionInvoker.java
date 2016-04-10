@@ -29,7 +29,6 @@ public class ActionInvoker {
 		this.timer = timer;
 	}
 	
-	//Onafhankelijk
     public void invokeActions(int hash, boolean pressed) {
         List<Mapping> maps = bindings.getMappings(hash);
         if (maps == null) {
@@ -58,7 +57,6 @@ public class ActionInvoker {
         }
     }
 
-    //Los van rest
     public void invokeTimedActions(int hash, long time, boolean pressed) {
         if (!bindings.contains(hash)) {
             return;
@@ -82,7 +80,6 @@ public class ActionInvoker {
         }
     }
 
-    //Los
     public void invokeUpdateActions() {
         for (Entry<Long> pressedButton : pressedButtons) {
             int hash = pressedButton.getKey();
@@ -123,7 +120,6 @@ public class ActionInvoker {
         }
     }
     
-    //Wordt Gebruikt
     public void invokeAnalogs(int hash, float value, boolean isAxis) {
         List<Mapping> maps = bindings.getMappings(hash);
         if (maps == null) {
@@ -188,7 +184,6 @@ public class ActionInvoker {
         }
     }
 
-    //Joystick
     public void invokeAnalogsAndActions(int hash, float value, 
     		float effectiveDeadZone, boolean applyTpf, IntMap<Float> newerAxisValues) {
     	

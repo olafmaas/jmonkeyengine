@@ -30,8 +30,7 @@ public interface IListenerManager {
 	 * Removes a listener from receiving events.
 	 *
 	 * <p>This will unregister the listener from any mappings that it
-	 * was previously registered with via
-	 * {@link InputManager#addListener(com.jme3.input.controls.InputListener, java.lang.String[]) }.
+	 * was previously registered.
 	 *
 	 * @param listener The listener to unregister.
 	 *

@@ -9,9 +9,9 @@ public interface IBaseListenerRegistration {
 	 * Adds a {@link RawInputListener} to receive raw input events.
 	 *
 	 * <p>
-	 * Any raw input listeners registered to this <code>InputManager</code>
+	 * Any raw input listeners registered to this <code>BaseListenerResgistration</code>
 	 * will receive raw input events first, before they get handled
-	 * by the <code>InputManager</code> itself. The listeners are
+	 * by the <code>EventProcessors</code> itself. The listeners are
 	 * each processed in the order they were added, e.g. FIFO.
 	 * <p>
 	 * If a raw input listener has handled the event and does not wish
@@ -32,15 +32,13 @@ public interface IBaseListenerRegistration {
 	 * receives raw input events.
 	 *
 	 * @param listener The listener to cease receiving raw input events.
-	 *
-	 * @see InputManager#addRawInputListener(com.jme3.input.RawInputListener)
+
 	 */
 	void removeRawInputListener(RawInputListener listener);
 
 	/**
 	 * Clears all {@link RawInputListener}s.
 	 *
-	 * @see InputManager#addRawInputListener(com.jme3.input.RawInputListener)
 	 */
 	void clearRawInputListeners();
 

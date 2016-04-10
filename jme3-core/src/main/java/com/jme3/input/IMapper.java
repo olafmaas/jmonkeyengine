@@ -15,7 +15,6 @@ public interface IMapper {
 	 * @param mappingName The mapping name to assign.
 	 * @param triggers The triggers to which the mapping is to be registered.
 	 *
-	 * @see InputManager#deleteMapping(java.lang.String)
 	 */
 	void addMapping(String mappingName, Trigger... triggers);
 
@@ -28,7 +27,6 @@ public interface IMapper {
 	 *
 	 * @param mappingName The mapping name to unregister.
 	 *
-	 * @see InputManager#addMapping(java.lang.String, com.jme3.input.controls.Trigger[])
 	 */
 	void deleteMapping(String mappingName);
 
@@ -38,8 +36,6 @@ public interface IMapper {
 	 *
 	 * @param mappingName The mapping name to check.
 	 *
-	 * @see InputManager#addMapping(java.lang.String, com.jme3.input.controls.Trigger[])
-	 * @see InputManager#deleteMapping(java.lang.String)
 	 */
 	boolean hasMapping(String mappingName);
 

@@ -14,7 +14,6 @@ public class InputUpdater {
     private List<Input> inputDevices;
     private ISetInputSettings settings;
 	
-    //inpDevices should be initialized
     public InputUpdater(InputTimer inputTimer, ActionInvoker actionInvoker, IEventQueue queueProcessor, List<Input> inputDevices, ISetInputSettings inputSettings) {
     	timer = inputTimer;
     	invoker = actionInvoker;
@@ -24,7 +23,7 @@ public class InputUpdater {
     }
 	
     /**
-     * Updates the <code>InputManager</code>.
+     * Updates the whole InputSystem.
      * This will query current input devices and send
      * appropriate events to registered listeners.
      *
