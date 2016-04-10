@@ -85,6 +85,7 @@ import java.util.List;
  * for digital inputs. For analog inputs however, the <code>value</code> argument
  * will equal the actual analog value.
  */
+//@Deprecated
 public class InputManager implements RawInputListener {
 
 	CursorManager cursorManager;

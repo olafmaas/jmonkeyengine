@@ -2,7 +2,6 @@ package com.jme3.input.queue;
 
 import java.util.ArrayList;
 
-import com.jme3.app.Application;
 import com.jme3.input.IBaseListenerEmitter;
 import com.jme3.input.event.InputEvent;
 import com.jme3.input.eventprocessing.IEventProcessor;
@@ -15,11 +14,7 @@ public class EventQueue implements IEventQueue{
 	public boolean eventsPermitted = false;
 	
     /**
-     * Initializes the InputManager.
-     *
-     * <p>This should only be called internally in {@link Application}.
-     *
-     * @throws IllegalArgumentException If either mouseInput or keyInput are null.
+     * Initializes the EventQueue
      */
     public EventQueue( IBaseListenerEmitter listener, IEventProcessor eventProcessor ) {
         baselisteners = listener;
